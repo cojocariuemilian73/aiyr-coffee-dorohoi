@@ -192,6 +192,7 @@ function setupGallery() {
 
   const step = 360 / frames.length;
   let angle = 0;
+  let targetAngle = 0;
   let radius = 0;
   let animation = 0;
   let wheelTimer = 0;
@@ -203,14 +204,14 @@ function setupGallery() {
       const radians = (index * step + angle) * Math.PI / 180;
       const side = Math.sin(radians);
       const front = (Math.cos(radians) + 1) / 2;
-      frame.style.transform = `translate(-50%, -50%) translate3d(${side * radius}px, ${(1 - front) * -18}px, 0) perspective(1200px) rotateY(${side * -28}deg) scale(${.54 + front * .46})`;
-      frame.style.filter = `brightness(${.42 + front * .58})`;
+      frame.style.transform = `translate(-50%, -50%) translate3d(${side * radius}px, ${(1 - front) * -32}px, 0) perspective(1100px) rotateY(${side * -38}deg) scale(${.52 + front * .48})`;
+      frame.style.filter = `brightness(${.35 + front * .65})`;
       frame.style.zIndex = String(Math.round(front * 100));
     });
   }
 
   function updateSize() {
-    radius = Math.min(stage.clientWidth * .28, 265);
+    radius = stage.clientWidth * .47;
     render();
   }
 
@@ -225,12 +226,17 @@ function setupGallery() {
     clearTimeout(wheelTimer);
     cancelAnimationFrame(animation);
     const from = angle;
-    const start = performance.now();
+    const distance = target - from;
+    targetAngle = target;
     selectFrame(wrap(-Math.round(target / step)));
+    if (distance === 0) return;
+
+    const start = performance.now();
+    const duration = Math.min(660, 440 + Math.abs(distance) * 1.4);
 
     function tick(now) {
-      const progress = Math.min(1, (now - start) / 620);
-      angle = from + (target - from) * (1 - (1 - progress) ** 3);
+      const progress = Math.min(1, (now - start) / duration);
+      angle = from + distance * (1 - (1 - progress) ** 4);
       render();
       if (progress < 1) animation = requestAnimationFrame(tick);
     }
@@ -238,7 +244,7 @@ function setupGallery() {
   }
 
   function moveBy(direction) {
-    snap((Math.round(angle / step) - direction) * step);
+    snap(targetAngle - direction * step);
   }
 
   buttons.forEach((button, index) => button.addEventListener("click", () => {
@@ -291,6 +297,15 @@ function setupGallery() {
     event.preventDefault();
     moveBy(event.key === "ArrowRight" ? 1 : -1);
   });
+
+  if ("IntersectionObserver" in window) {
+    gallery.classList.add("has-gallery-intro");
+    new IntersectionObserver((entries, observer) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      gallery.classList.add("is-gallery-visible");
+      observer.disconnect();
+    }, { threshold: .12 }).observe(stage);
+  }
 
   stage.tabIndex = 0;
   stage.setAttribute("role", "group");

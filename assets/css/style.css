@@ -178,30 +178,62 @@ main [id], footer[id] { scroll-margin-top: calc(var(--header-height) + 20px); }
 .gallery-photo picture, .gallery-photo img { width: 100%; height: 100%; display: block; }
 .gallery-photo img { object-fit: cover; object-position: 50% 56%; }
 .gallery.is-carousel .gallery-frames {
-  position: relative; display: block; height: clamp(250px, 52vw, 510px); overflow: hidden;
+  position: relative; display: block; height: clamp(250px, 57vw, 550px); overflow: hidden;
   touch-action: pan-y; cursor: grab; user-select: none; isolation: isolate;
 }
 .gallery.is-carousel .gallery-frames.is-dragging { cursor: grabbing; }
 .gallery.is-carousel .gallery-frames:focus-visible { outline-offset: -3px; }
-.gallery.is-carousel .gallery-frame { position: absolute; left: 50%; top: 50%; width: min(72%, 700px); height: 94%; }
+.gallery.is-carousel .gallery-frame { position: absolute; left: 50%; top: 50%; width: 82%; height: 94%; }
 .gallery.is-carousel .gallery-photo { height: 100%; aspect-ratio: auto; }
 .gallery.is-carousel .gallery-photo img { pointer-events: none; -webkit-user-drag: none; }
 .gallery-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .gallery-controls button {
-  display: grid; gap: 8px; align-content: start; min-width: 0;
+  position: relative; display: grid; gap: 8px; align-content: start; min-width: 0;
   padding: 8px; text-align: left; font-size: .79rem; line-height: 1.3;
-  background: var(--paper); border: 1px solid var(--line); border-radius: 4px;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 4px; cursor: pointer;
   transition: border-color .2s var(--ease-out), background-color .2s var(--ease-out);
 }
 .gallery-controls button[aria-pressed="true"] { background: var(--menu-surface); border-color: var(--oak); }
+.gallery-controls button::before {
+  content: ""; position: absolute; inset: auto 8px 0; height: 2px;
+  background: var(--oak); transform: scaleX(0); transform-origin: left;
+}
+.gallery-controls button[aria-pressed="true"]::before { transform: scaleX(1); }
 .gallery-thumb { display: block; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 2px; }
 .gallery-thumb picture, .gallery-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
 @media (hover: hover) { .gallery-controls button:hover { border-color: var(--oak); } }
+@media (prefers-reduced-motion: no-preference) {
+  .gallery.has-gallery-intro:not(.is-gallery-visible):not(:focus-within) :is(.gallery-frames, .gallery-controls) {
+    opacity: 0;
+  }
+  .gallery.is-gallery-visible .gallery-frames { animation: gallery-open .95s var(--ease-out) backwards; }
+  .gallery.is-gallery-visible .gallery-controls button { animation: gallery-thumbnail-in .48s var(--ease-out) .12s backwards; }
+  .gallery.is-gallery-visible .gallery-controls button:nth-child(2) { animation-delay: .19s; }
+  .gallery.is-gallery-visible .gallery-controls button:nth-child(3) { animation-delay: .26s; }
+  .gallery-controls button::before { transition: transform .36s var(--ease-out); }
+}
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  .gallery-controls button { transition: border-color .2s, background-color .2s, translate .22s var(--ease-out); }
+  .gallery-thumb img { transition: transform .42s var(--ease-out); }
+  .gallery-controls button:hover { translate: 0 -2px; }
+  .gallery-controls button:hover img { transform: scale(1.06); }
+  .gallery-controls button:active { translate: 0 0; }
+}
+@keyframes gallery-open {
+  from { clip-path: inset(0 100% 0 0 round 4px); transform: translateY(12px); opacity: .4; }
+  to { clip-path: inset(0 0 0 0 round 4px); transform: none; opacity: 1; }
+}
+@keyframes gallery-thumbnail-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
 @media (min-width: 900px) {
   .story-grid { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); }
   .gallery-frames { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .gallery.is-interactive .gallery-grid { grid-template-columns: minmax(0, 3fr) minmax(230px, 1fr); gap: clamp(32px, 6vw, 88px); align-items: start; }
   .gallery.is-interactive .gallery-frames { grid-template-columns: minmax(0, 1fr); }
+  .gallery.is-carousel .gallery-frames { height: clamp(330px, 54svh, 580px); }
+  .gallery.is-carousel .gallery-frame { width: 86%; }
   .gallery-photo { height: min(53svh, 600px); aspect-ratio: auto; }
   .gallery-controls { grid-template-columns: 1fr; }
   .gallery-controls button { grid-template-columns: minmax(64px, 88px) minmax(0, 1fr); align-items: center; gap: 14px; font-size: .95rem; }
