@@ -121,42 +121,6 @@ def gallery_frame(key):
     return f'<figure class="gallery-frame">{image(key, sizes="(min-width: 900px) 56vw, 83vw")}</figure>'
 
 
-def menu_tab(category, index):
-    category_id = esc(category["id"])
-    return (
-        f'<button type="button" class="menu-tab" role="tab" id="fila-{category_id}" '
-        f'aria-controls="meniu-{category_id}" aria-selected="{"true" if index == 0 else "false"}" '
-        f'tabindex="{0 if index == 0 else -1}" data-category="{category_id}">'
-        f'<span class="tab-index">{index + 1:02d}</span>'
-        f'<span class="tab-name">{esc(category["nume"])}</span>'
-        f'<span class="tab-count">{len(category["produse"])}</span></button>'
-    )
-
-
-def menu_panel(category):
-    category_id = esc(category["id"])
-    cards = []
-    for product in category["produse"]:
-        price = product["pret"]
-        amount = (f"{price:g}".replace(".", ",") + " lei") if price is not None else "La cerere"
-        badge = '<span class="favorite">Preferata casei</span>' if product.get("preferat") else ""
-        key = product.get("imagine")
-        if key in DATA["imagini"]:
-            visual = f'<div class="dish-photo">{image(key, sizes="(min-width: 900px) 30vw, 50vw")}{badge}</div>'
-        else:
-            # Fără fotografie: numele scris mare, pe un fond cald.
-            visual = f'<div class="dish-photo dish-type"><span class="dish-type-name" aria-hidden="true">{esc(product["nume"])}</span>{badge}</div>'
-        cards.append(
-            f'<li class="dish-card">{visual}<div class="dish-info"><div class="dish-line">'
-            f'<h4>{esc(product["nume"])}</h4><span class="price">{amount}</span></div>'
-            f'<p>{esc(product["descriere"])}</p></div></li>'
-        )
-    return (
-        f'<section class="menu-panel" role="tabpanel" id="meniu-{category_id}" aria-labelledby="fila-{category_id}">'
-        f'<h3 class="menu-panel-title">{esc(category["nume"])}</h3><ul class="dish-grid">{"".join(cards)}</ul></section>'
-    )
-
-
 DOODLES = {
     "cana": '<svg class="doodle doodle-cup" viewBox="0 0 120 100"><path pathLength="1" d="M22 40c20 2 40 2 58 0 1 10 1 18-2 26-6 14-48 14-54 0-3-8-3-16-2-26Z"/><path pathLength="1" d="M80 46c16-2 16 20-2 18"/><path pathLength="1" d="M8 84c30 8 74 8 104-1"/><path pathLength="1" d="M42 30c-7-8 7-12 0-21M58 30c-7-8 7-12 0-21"/></svg>',
     "lamaie": '<svg class="doodle doodle-lemon" viewBox="0 0 100 100"><path pathLength="1" d="M50 8a42 42 0 1 1-.1 0Z"/><path pathLength="1" d="M50 18a32 32 0 1 1-.1 0Z"/><path pathLength="1" d="M50 18v64M18 50h64M27 27l46 46M73 27 27 73"/></svg>',
@@ -179,37 +143,23 @@ def product_detail(product, badge=""):
     return f"<p>{description}{badge}</p>" if description or badge else ""
 
 
-def menu_board():
-    categories = [category for category in DATA["meniu"] if category["produse"]]
-    buttons = "".join(
-        f'<button type="button" class="board-filter" aria-controls="grup-{esc(category["id"])}" aria-pressed="false">{esc(category["nume"])}</button>'
-        for category in categories
-    )
-    groups = []
-    for category in categories:
-        items = []
-        for product in category["produse"]:
-            price = product["pret"]
-            amount = (f"{price:g}".replace(".", ",") + " lei") if price is not None else "La cerere"
-            key = product.get("imagine")
-            has_photo = key in DATA["imagini"]
-            thumb = f'<span class="board-thumb" aria-hidden="true">{image(key, sizes="52px")}</span>' if has_photo else ""
-            star = '<span class="board-fav">★ preferata casei</span>' if product.get("preferat") else ""
-            items.append(
-                '<li class="board-item">'
-                f'<div class="board-line">{thumb}<h4>{esc(product["nume"])}</h4><span class="board-dots" aria-hidden="true"></span>'
-                f'<span class="board-price">{amount}</span></div>{product_detail(product, star)}</li>'
-            )
-        groups.append(
-            f'<section class="board-group" id="grup-{esc(category["id"])}"><h3>{esc(category["nume"])}</h3>'
-            f'<ul class="board-list">{"".join(items)}</ul></section>'
+def menu_board(products):
+    items = []
+    for product in products:
+        price = product["pret"]
+        amount = (f"{price:g}".replace(".", ",") + " lei") if price is not None else "La cerere"
+        key = product.get("imagine")
+        thumb = f'<span class="board-thumb" aria-hidden="true">{image(key, sizes="48px")}</span>' if key in DATA["imagini"] else ""
+        star = '<span class="board-fav">★ preferata casei</span>' if product.get("preferat") else ""
+        items.append(
+            '<li class="board-item">'
+            f'<div class="board-line">{thumb}<h3>{esc(product["nume"])}</h3><span class="board-dots" aria-hidden="true"></span>'
+            f'<span class="board-price">{amount}</span></div>{product_detail(product, star)}</li>'
         )
     return (
         '<div class="chalkboard">'
         + "".join(DOODLES.values())
-        + f'<div class="board-filters" role="group" aria-label="Categorii de meniu" hidden>{buttons}</div>'
-        + f'<div class="board-cols">{"".join(groups)}</div>'
-        + "</div>"
+        + f'<ul class="board-list" role="list">{"".join(items)}</ul></div>'
     )
 
 
@@ -313,7 +263,8 @@ illustrative = DATA["fotografiiIlustrative"]
 site_url = DATA["publicUrl"].rstrip("/") + "/" if DATA["publicUrl"] else ""
 story = TEXT["poveste"]
 gallery = TEXT["galerie"]["imagini"]
-menu_available = any(category["produse"] for category in DATA["meniu"])
+menu_products = [product for category in DATA["meniu"] for product in category["produse"]]
+menu_available = bool(menu_products)
 demo_menu = menu_available and DATA.get("meniuExemplu", False)
 demo_site = demo_menu or DATA["extra"].get("demo", False)
 menu_label = "Vezi meniul demo" if demo_menu else "Vezi meniul"
@@ -415,7 +366,6 @@ values = {
     "arrowDown": arrow("M12 4v15m-6-6 6 6 6-6"),
     "arrowOut": arrow("M6 18 18 6M7 6h11v11"),
     "menuNotice": demo_notice or empty_notice,
-    "categoriesHidden": "" if menu_available else " hidden",
     "reviews": "".join(review(item, i, len([r for r in DATA["recenzii"] if r])) for i, item in enumerate([r for r in DATA["recenzii"] if r], start=1)),
     "writeReview": esc(links.get("scrieRecenzie") or links["recenzii"] or map_search),
     "arrowLeft": arrow("M19 12H5m6-6-6 6 6 6"),
@@ -428,9 +378,7 @@ values = {
     "mapB": esc(map_embed(botosani)),
     "storyImage": image(story["imagineMare"], sizes="(min-width: 900px) 55vw, 92vw") if story.get("imagineMare") else "",
     "galleryFrames": "".join(gallery_frame(key) for key in gallery),
-    "menuTabs": "".join(menu_tab(row, i) for i, row in enumerate(DATA["meniu"])),
-    "menuPanels": "".join(menu_panel(row) for row in DATA["meniu"]),
-    "menuBoard": menu_board() if menu_available else "",
+    "menuBoard": menu_board(menu_products) if menu_available else "",
     "socialLink": f'<a class="text-link" href="{esc(social)}">Urmărește-ne pe {social_label} {arrow("M6 18 18 6M7 6h11v11")}</a>' if social else "",
     "photoCredits": '<p class="photo-credits">Fotografii de ' + " · ".join(
         f'<a href="{esc(source["url"])}">{esc(source["nume"])}</a>' for source in DATA["surseFoto"]
@@ -498,13 +446,10 @@ def qr_item(product):
     price = product["pret"]
     amount = (f"{price:g}".replace(".", ",") + " lei") if price is not None else "La cerere"
     key = product.get("imagine")
-    if key in DATA["imagini"]:
-        thumb = f'<div class="qm-thumb">{image(key, sizes="76px")}</div>'
-    else:
-        thumb = f'<div class="qm-thumb is-letter" aria-hidden="true">{esc(product["nume"][0])}</div>'
+    thumb = f'<div class="qm-thumb">{image(key, sizes="64px")}</div>' if key in DATA["imagini"] else ""
     fav = '<span class="qm-fav">Preferata casei</span>' if product.get("preferat") else ""
     return (
-        f'<li class="qm-item">{thumb}<h3>{esc(product["nume"])}{fav}</h3>'
+        f'<li class="qm-item">{thumb}<h2>{esc(product["nume"])}{fav}</h2>'
         f'<span class="price">{amount}</span>{product_detail(product)}</li>'
     )
 
@@ -519,12 +464,7 @@ menu_values.update({
     "menuAddress": esc(f'{dorohoi["adresa"]}, {dorohoi["oras"]}') + (f' · {values["scheduleLabelD"]}' if dorohoi["program"] else ""),
     "vMenuCss": hashlib.sha1((ROOT / "assets/css/meniu.css").read_bytes()).hexdigest()[:8],
     "cover": image(TEXT["paginaMeniu"].get("imagine", "hero"), hero=True, sizes="100vw"),
-    "chips": "".join(f'<a class="qm-chip" href="#{esc(c["id"])}">{esc(c["nume"])}</a>' for c in DATA["meniu"]),
-    "sections": "".join(
-        f'<section class="qm-section" id="{esc(c["id"])}"><h2>{esc(c["nume"])}</h2>'
-        f'<ul class="qm-list">{"".join(qr_item(p) for p in c["produse"])}</ul></section>'
-        for c in DATA["meniu"]
-    ),
+    "menuItems": f'<ul class="qm-list" role="list">{"".join(qr_item(p) for p in menu_products)}</ul>' if menu_available else "",
 })
 menu_template = (SOURCE / "meniu.html").read_text(encoding="utf-8")
 (ROOT / "meniu.html").write_text(render(menu_template, menu_values), encoding="utf-8", newline="\n")

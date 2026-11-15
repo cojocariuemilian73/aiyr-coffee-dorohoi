@@ -35,7 +35,7 @@ preferences.add("(prefers-reduced-motion: no-preference)", () => {
 
   // 4. Restul conținutului apare în grupuri, la fel de discret.
   const groups = [
-    ".section-intro > p:not(.eyebrow)", ".board-group", ".review-card",
+    ".section-intro > p:not(.eyebrow)", ".review-card",
     ".location-card", ".footer-grid > *"
   ];
   groups.forEach((selector) => {

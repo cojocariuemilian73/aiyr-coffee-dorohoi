@@ -24,9 +24,7 @@
     </div>
   </header>
 
-  <nav class="qm-nav" aria-label="Categorii"{{categoriesHidden}}>{{chips}}</nav>
-
-  <main class="qm-main">{{menuEmptyNotice}}{{sections}}{{menuNotes}}</main>
+  <main class="qm-main">{{menuEmptyNotice}}{{menuItems}}{{menuNotes}}</main>
 
   <footer class="qm-foot">
     <a class="text-link" href="index.html">{{menuPageStory}} {{arrowOut}}</a>
@@ -34,21 +32,5 @@
     {{photoCredits}}
   </footer>
 
-  <script>
-    // Categoria pe care o citești rămâne aprinsă sus.
-    (() => {
-      const chips = [...document.querySelectorAll(".qm-chip")];
-      const bar = document.querySelector(".qm-nav");
-      const mark = (id) => chips.forEach((chip) => {
-        const on = chip.hash === "#" + id;
-        chip.toggleAttribute("aria-current", on);
-        if (on) bar.scrollTo({ left: chip.offsetLeft - 16, behavior: "smooth" });
-      });
-      const seen = new IntersectionObserver((entries) => {
-        for (const entry of entries) if (entry.isIntersecting) mark(entry.target.id);
-      }, { rootMargin: "-30% 0px -60% 0px" });
-      document.querySelectorAll(".qm-section").forEach((section) => seen.observe(section));
-    })();
-  </script>
 </body>
 </html>

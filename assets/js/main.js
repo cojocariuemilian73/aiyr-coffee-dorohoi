@@ -89,90 +89,9 @@ function setupHours() {
   });
 }
 
-function setupMenu() {
-  const list = select(".menu-tabs");
-  if (!list) return;
-  const tabs = selectAll(".menu-tab");
-  const panels = selectAll(".menu-panel");
-  const calm = matchMedia("(prefers-reduced-motion: reduce)");
-  list.hidden = false;
-
-  function show(tab, { focus = false, animate = true } = {}) {
-    const id = tab.dataset.category;
-    for (const other of tabs) {
-      const active = other === tab;
-      other.setAttribute("aria-selected", String(active));
-      other.tabIndex = active ? 0 : -1;
-    }
-    for (const panel of panels) panel.hidden = panel.id !== "meniu-" + id;
-    if (focus) tab.focus();
-    if (!animate || calm.matches) return;
-    // Preparatele intră pe rând, ca și cum ar fi puse pe masă.
-    select("#meniu-" + id).querySelectorAll(".dish-card").forEach((dish, index) => {
-      dish.animate(
-        [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }],
-        { duration: 520, delay: index * 60, easing: "cubic-bezier(.23, 1, .32, 1)", fill: "backwards" }
-      );
-    });
-  }
-
-  tabs.forEach((tab, index) => {
-    tab.addEventListener("click", () => show(tab));
-    tab.addEventListener("keydown", (event) => {
-      const keys = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
-      let next;
-      if (event.key in keys) next = tabs[(index + keys[event.key] + tabs.length) % tabs.length];
-      else if (event.key === "Home") next = tabs[0];
-      else if (event.key === "End") next = tabs.at(-1);
-      if (!next) return;
-      event.preventDefault();
-      show(next, { focus: true });
-    });
-  });
-  show(tabs[0], { animate: false });
-}
-
-function setupChoices(controls, keyframes, duration) {
-  if (!controls) return false;
-  const buttons = [...controls.querySelectorAll("button[aria-controls]")];
-  const panels = buttons.map((button) => document.getElementById(button.getAttribute("aria-controls")));
-  if (!buttons.length || panels.some((panel) => !panel)) return false;
-
-  const calm = matchMedia("(prefers-reduced-motion: reduce)");
-  let active = -1;
-  let transition;
-
-  function selectPanel(index, animate) {
-    if (index === active) return;
-    transition?.cancel();
-    active = index;
-    panels.forEach((panel, i) => {
-      panel.hidden = i !== index;
-      buttons[i].setAttribute("aria-pressed", String(i === index));
-    });
-    if (animate && !calm.matches) {
-      transition = panels[index].animate(keyframes, {
-        duration, easing: "cubic-bezier(.23, 1, .32, 1)"
-      });
-    }
-  }
-
-  buttons.forEach((button, index) => {
-    button.addEventListener("click", (event) => selectPanel(index, event.detail > 0));
-  });
-  selectPanel(0, false);
-  controls.hidden = buttons.length < 2;
-  return true;
-}
-
 function setupBoard() {
   const board = select(".chalkboard");
   if (!board) return;
-  setupChoices(board.querySelector(".board-filters"), [
-    { opacity: .35, transform: "translateY(10px)" },
-    { opacity: 1, transform: "translateY(0)" }
-  ], 240);
-
   new IntersectionObserver((entries, observer) => {
     if (entries.some((entry) => entry.isIntersecting)) {
       board.classList.add("is-drawn");
@@ -470,7 +389,6 @@ function setupTypeTitle() {
 setupTypeTitle();
 setupNavigation();
 setupHours();
-setupMenu();
 setupBoard();
 setupGallery();
 setupHeader();
