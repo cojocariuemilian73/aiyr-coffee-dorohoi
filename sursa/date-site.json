@@ -502,19 +502,13 @@
     "poveste": {
       "titlu": "Cafeneaua de pe Războieni",
       "lead": "Terasa AIYR Coffee se vede de la stradă, sub firma luminoasă.",
-      "text": "Înăuntru, mesele din lemn sunt așezate în fața barului. Galeria surprinde cafeneaua și câteva dintre produsele fotografiate de vizitatori.",
-      "imagineMare": "interior",
-      "imagineMica": "fatadaVerticala",
-      "cuvinteCheie": [
-        "terasa",
-        "aiyr",
-        "barului"
-      ]
+      "text": "Înăuntru, mesele din lemn sunt așezate în fața barului.",
+      "imagineMare": "interior"
     },
     "galerie": {
       "imagini": [
-        "interior",
         "cafeaCroissant",
+        "interior",
         "fatadaVerticala"
       ],
       "titlu": "Galerie",

@@ -6,7 +6,7 @@ import json
 import math
 
 
-def build(data, esc, image, frame):
+def build(data, esc, image):
     extra = data["extra"]
     demo = extra.get("demo", False) or data.get("meniuExemplu", False)
     products = {p["nume"]: p for category in data["meniu"] for p in category["produse"]}

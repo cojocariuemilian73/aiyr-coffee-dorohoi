@@ -67,48 +67,6 @@
 
     {{extraAfterMenu}}
 
-    <section class="section locations" id="locatii" aria-labelledby="locations-title">
-      <div class="shell">
-        <h2 id="locations-title">{{locationsTitle}}</h2>
-        <div class="locations-grid">{{locationCards}}</div>
-      </div>
-    </section>
-
-    <!-- story:start -->
-    <section class="section story" id="poveste" aria-labelledby="story-title" data-keys="{{storyKeys}}">
-      <div class="shell story-grid">
-        <div class="story-text">
-          <h2 id="story-title">{{storyTitle}}</h2>
-          <p class="lead">{{storyLead}}</p>
-          <p>{{storyText}}</p>
-        </div>
-        <div class="story-images">{{storyYear}}
-          {{storyLarge}}
-          {{storySmall}}{{storyThird}}
-        </div>
-      </div>
-    </section>
-    <!-- story:end -->
-
-    {{extraOffers}}
-
-    <!-- gallery:start -->
-    <section class="section wood" id="atelier" aria-labelledby="wood-title">
-      <div class="wood-pin">
-        {{woodWindow}}
-        <div class="shell wood-layout">
-          <div class="wood-head">
-            <h2 id="wood-title">{{galleryTitle}}</h2>
-            <p>{{galleryText}}</p>
-          </div>
-          <div class="wood-rail" role="region" aria-label="Galerie foto" tabindex="0">
-            <ul class="wood-strip">{{woodImages}}</ul>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- gallery:end -->
-
     <section class="section menu-section" id="meniu" aria-labelledby="menu-title">
       <div class="shell">
         <div class="section-intro">
@@ -120,6 +78,33 @@
         <a class="text-link menu-page-link" href="meniu.html"{{categoriesHidden}}>Deschide meniul pe telefon {{arrowOut}}</a>
       </div>
     </section>
+
+    <!-- story:start -->
+    <section class="section story" id="poveste" aria-labelledby="story-title">
+      <div class="shell story-grid">
+        <div class="story-image">{{storyImage}}</div>
+        <div class="story-text">
+          <h2 id="story-title">{{storyTitle}}</h2>
+          <p class="lead">{{storyLead}}</p>
+          <p>{{storyText}}</p>
+        </div>
+      </div>
+    </section>
+    <!-- story:end -->
+
+    <!-- gallery:start -->
+    <section class="section gallery" id="atelier" aria-labelledby="gallery-title">
+      <div class="shell">
+        <h2 id="gallery-title">{{galleryTitle}}</h2>
+        <div class="gallery-grid">
+          <div class="gallery-frames">{{galleryFrames}}</div>
+          <div class="gallery-controls" role="group" aria-label="Alege o fotografie" hidden>{{galleryButtons}}</div>
+        </div>
+      </div>
+    </section>
+    <!-- gallery:end -->
+
+    {{extraOffers}}
 
     <!-- reviews:start -->
     <section class="section reviews" id="recenzii" aria-labelledby="reviews-title">
@@ -139,6 +124,14 @@
       <div class="reviews-track" id="reviews-track" role="region" aria-label="Recenzii, derulează spre dreapta" tabindex="0" data-lenis-prevent-wheel>{{reviews}}</div>
     </section>
     <!-- reviews:end -->
+
+    <section class="section locations" id="locatii" aria-labelledby="locations-title">
+      <div class="shell">
+        <h2 id="locations-title">{{locationsTitle}}</h2>
+        <div class="locations-grid">{{locationCards}}</div>
+      </div>
+    </section>
+
   </main>
 
   <footer class="site-footer" id="contact">

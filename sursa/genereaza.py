@@ -117,30 +117,18 @@ def image(key, *, hero=False, sizes="(min-width: 900px) 45vw, 100vw"):
     return f'<picture><source type="image/avif" srcset="{esc(avif)}" sizes="{sizes}">{img}</picture>'
 
 
-def frame(key, extra="", sizes="(min-width: 900px) 45vw, 100vw"):
-    return f'<div class="image-frame depth{extra}">{image(key, sizes=sizes)}</div>'
+def gallery_frame(key, index):
+    caption = esc(DATA["imagini"][key]["titlu"])
+    return (f'<figure class="gallery-frame" id="galerie-cadru-{index}">'
+            f'<div class="gallery-photo">{image(key, sizes="(min-width: 900px) 64vw, 92vw")}</div>'
+            f'<figcaption>{caption}</figcaption></figure>')
 
 
-def figure(key, extra=""):
-    # Fiecare fotografie își păstrează forma: pătrată sau lată.
-    item = DATA["imagini"][key]
-    shape = " is-wide" if item["latime"] > item["inaltime"] else ""
-    return (
-        f'<li class="wood-figure{shape}{extra}"><div class="image-frame">'
-        f'{image(key, sizes="(min-width: 900px) 46vh, 78vw")}</div></li>'
-    )
-
-
-def gallery_tile(key, index):
-    item = DATA["imagini"][key]
-    caption = item["titlu"]
-    if DATA["fotografiiIlustrative"]:
-        caption += " · Imagine ilustrativă"
-    return (
-        f'<a class="gallery-item g{index} image-frame depth" href="{esc(IMG + item["fisier"])}" '
-        f'data-caption="{esc(caption)}" aria-label="Mărește imaginea. {esc(caption)}">'
-        f'{image(key, sizes="(min-width: 640px) 60vw, 50vw")}<span class="gallery-caption">{esc(caption)}</span></a>'
-    )
+def gallery_button(key, index):
+    caption = esc(DATA["imagini"][key]["titlu"])
+    return (f'<button type="button" aria-controls="galerie-cadru-{index}" aria-pressed="false">'
+            f'<span class="gallery-thumb" aria-hidden="true">{image(key, sizes="88px")}</span>'
+            f'<span>{caption}</span></button>')
 
 
 def menu_tab(category, index):
@@ -179,7 +167,6 @@ def menu_panel(category):
     )
 
 
-FILTERS = (("toate", "Toate"), ("fara-cafeina", "Fără cafeină"), ("rece", "Rece"), ("dulce", "Dulce"), ("preferat", "Preferata casei"))
 DOODLES = {
     "cana": '<svg class="doodle doodle-cup" viewBox="0 0 120 100"><path pathLength="1" d="M22 40c20 2 40 2 58 0 1 10 1 18-2 26-6 14-48 14-54 0-3-8-3-16-2-26Z"/><path pathLength="1" d="M80 46c16-2 16 20-2 18"/><path pathLength="1" d="M8 84c30 8 74 8 104-1"/><path pathLength="1" d="M42 30c-7-8 7-12 0-21M58 30c-7-8 7-12 0-21"/></svg>',
     "lamaie": '<svg class="doodle doodle-lemon" viewBox="0 0 100 100"><path pathLength="1" d="M50 8a42 42 0 1 1-.1 0Z"/><path pathLength="1" d="M50 18a32 32 0 1 1-.1 0Z"/><path pathLength="1" d="M50 18v64M18 50h64M27 27l46 46M73 27 27 73"/></svg>',
@@ -204,44 +191,35 @@ def product_detail(product, badge=""):
 
 
 def menu_board():
-    products = [product for category in DATA["meniu"] for product in category["produse"]]
-    tags = {tag for product in products for tag in product.get("etichete", [])}
-    if any(product.get("preferat") for product in products):
-        tags.add("preferat")
-    filters = "".join(
-        f'<button type="button" class="board-filter" data-filter="{key}" aria-pressed="{"true" if key == "toate" else "false"}">{label}</button>'
-        for key, label in FILTERS
-        if key == "toate" or key in tags
+    categories = [category for category in DATA["meniu"] if category["produse"]]
+    buttons = "".join(
+        f'<button type="button" class="board-filter" aria-controls="grup-{esc(category["id"])}" aria-pressed="false">{esc(category["nume"])}</button>'
+        for category in categories
     )
     groups = []
-    n = 0
-    for category in DATA["meniu"]:
+    for category in categories:
         items = []
         for product in category["produse"]:
             price = product["pret"]
             amount = (f"{price:g}".replace(".", ",") + " lei") if price is not None else "La cerere"
-            labels = list(product.get("etichete", [])) + (["preferat"] if product.get("preferat") else [])
             key = product.get("imagine")
             has_photo = key in DATA["imagini"]
             thumb = f'<span class="board-thumb" aria-hidden="true">{image(key, sizes="52px")}</span>' if has_photo else ""
             star = '<span class="board-fav">★ preferata casei</span>' if product.get("preferat") else ""
             items.append(
-                f'<li class="board-item" data-tags="{" ".join(labels)}" style="view-transition-name: produs-{n}">'
+                '<li class="board-item">'
                 f'<div class="board-line">{thumb}<h4>{esc(product["nume"])}</h4><span class="board-dots" aria-hidden="true"></span>'
                 f'<span class="board-price">{amount}</span></div>{product_detail(product, star)}</li>'
             )
-            n += 1
         groups.append(
-            f'<section class="board-group" data-category="{esc(category["id"])}"><h3>{esc(category["nume"])}</h3>'
+            f'<section class="board-group" id="grup-{esc(category["id"])}"><h3>{esc(category["nume"])}</h3>'
             f'<ul class="board-list">{"".join(items)}</ul></section>'
         )
     return (
         '<div class="chalkboard">'
         + "".join(DOODLES.values())
-        + f'<div class="board-filters" role="group" aria-label="Filtrează meniul">{filters}</div>'
+        + f'<div class="board-filters" role="group" aria-label="Categorii de meniu" hidden>{buttons}</div>'
         + f'<div class="board-cols">{"".join(groups)}</div>'
-        + '<p class="board-empty" hidden>Nimic pe filtrul ăsta. Încearcă altul.</p>'
-        + '<p class="sr-only" role="status" aria-live="polite" data-board-status></p>'
         + "</div>"
     )
 
@@ -370,13 +348,14 @@ profiles = [links[key] for key in ("instagram", "facebook") if links.get(key)]
 if profiles:
     main_shop["sameAs"] = profiles
 
-nav = [("locatii", "Locație"), ("meniu", "Meniu")]
-if DATA["extra"]["activ"]:
-    nav.append(("oferte", "Cadouri"))
-if gallery:
-    nav.append(("atelier", "Galerie"))
+nav = [("meniu", "Meniu")]
 if story:
     nav.append(("poveste", "Poveste"))
+if gallery:
+    nav.append(("atelier", "Galerie"))
+if DATA["extra"]["activ"]:
+    nav.append(("oferte", "Cadouri"))
+nav.append(("locatii", "Locație"))
 values = {
     "demoRobots": '<meta name="robots" content="noindex">' if demo_site else "",
     "demoHero": '<p class="hero-demo-label">Site demonstrativ</p>' if demo_site else "",
@@ -393,7 +372,6 @@ values = {
     "storyLead": rich(story.get("lead", "")),
     "storyText": rich(story.get("text", "")),
     "galleryTitle": rich(TEXT["galerie"]["titlu"]),
-    "galleryText": rich(TEXT["galerie"]["text"]),
     "menuTitle": rich(TEXT["meniu"]),
     "reviewsTitle": rich(TEXT["recenzii"]),
     "locationsTitle": rich(TEXT["locatii"]),
@@ -458,24 +436,9 @@ values = {
     "phoneB": phone_link(botosani.get("telefon")),
     "mapD": esc(links["harta"] or map_embed(dorohoi)),
     "mapB": esc(map_embed(botosani)),
-    "storyLarge": frame(story["imagineMare"], " story-large", "(min-width: 900px) 40vw, 80vw") if story.get("imagineMare") else "",
-    "storySmall": frame(story["imagineMica"], " story-small", "(min-width: 900px) 24vw, 45vw") if story.get("imagineMica") else "",
-    "storyThird": "\n          " + frame(story["imagineTrei"], " story-third", "(min-width: 900px) 16vw, 30vw") if story.get("imagineTrei") else "",
-    "storyYear": f'\n          <span class="story-year" aria-hidden="true">{esc(story["an"])}</span>' if story.get("an") else "",
-    "storyKeys": esc(",".join(TEXT["poveste"].get("cuvinteCheie", []))),
-    "woodImages": "".join(figure(key, f" w{i}") for i, key in enumerate(TEXT["galerie"]["imagini"])),
-    "woodWindow": (
-        '<div class="wood-window" aria-hidden="true">'
-        + "".join(
-            f'<div class="ww-frame" style="--i:{i};--w:{DATA["imagini"][key]["latime"]};--h:{DATA["imagini"][key]["inaltime"]};'
-            f'--rot:{(-2.2, 1.8, -1.2, 2.6, -1.6)[i % 5]}deg;--dx:{(0, 26, -22, 18, -10)[i % 5]}px;--dy:{(0, -14, 12, -8, 16)[i % 5]}px">'
-            f'<div class="ww-photo">{image(key, sizes="(min-width: 900px) 800px, 90vw")}</div>'
-            f'<p class="ww-cap"><span>{i + 1:02d}</span>{esc(DATA["imagini"][key].get("titlu", ""))}</p></div>'
-            for i, key in enumerate(TEXT["galerie"]["imagini"]))
-        + '<div class="ww-shade"></div>'
-        + f'<div class="ww-copy"><p class="ww-title">{rich(TEXT["galerie"]["titlu"])}</p><p class="ww-text">{rich(TEXT["galerie"]["text"])}</p></div>'
-        + '</div>'
-    ) if gallery else "",
+    "storyImage": image(story["imagineMare"], sizes="(min-width: 900px) 55vw, 92vw") if story.get("imagineMare") else "",
+    "galleryFrames": "".join(gallery_frame(key, i) for i, key in enumerate(gallery)),
+    "galleryButtons": "".join(gallery_button(key, i) for i, key in enumerate(gallery)),
     "menuTabs": "".join(menu_tab(row, i) for i, row in enumerate(DATA["meniu"])),
     "menuPanels": "".join(menu_panel(row) for row in DATA["meniu"]),
     "menuBoard": menu_board() if menu_available else "",
@@ -492,7 +455,7 @@ values = {
 from extra_sectiuni import build as build_extras
 
 extras_enabled = DATA["extra"]["activ"]
-extras = build_extras(DATA, esc, image, frame) if extras_enabled else {}
+extras = build_extras(DATA, esc, image) if extras_enabled else {}
 extra_head = (
     '<link rel="stylesheet" href="assets/css/extra.css?v='
     + hashlib.sha1((ROOT / "assets/css/extra.css").read_bytes()).hexdigest()[:8] + '">'

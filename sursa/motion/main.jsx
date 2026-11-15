@@ -35,8 +35,7 @@ preferences.add("(prefers-reduced-motion: no-preference)", () => {
 
   // 4. Restul conținutului apare în grupuri, la fel de discret.
   const groups = [
-    ".section-intro > p:not(.eyebrow)", ".wood-head > p",
-    ".wood-notes li", ".board-group", ".review-card",
+    ".section-intro > p:not(.eyebrow)", ".board-group", ".review-card",
     ".location-card", ".footer-grid > *"
   ];
   groups.forEach((selector) => {
@@ -46,15 +45,6 @@ preferences.add("(prefers-reduced-motion: no-preference)", () => {
       onEnter: (batch) => gsap.fromTo(batch, { y: RISE, opacity: 0 }, {
         y: 0, opacity: 1, duration: .9, ease: EASE, stagger: .08, clearProps: "transform,opacity"
       })
-    });
-  });
-
-  // 5. Adâncime: fotografia alunecă puțin în ramă la derulare.
-  document.documentElement.classList.add("has-depth");
-  gsap.utils.toArray(".depth img").forEach((image) => {
-    gsap.fromTo(image, { yPercent: -4 }, {
-      yPercent: 4, ease: "none",
-      scrollTrigger: { trigger: image.closest(".depth"), start: "top bottom", end: "bottom top", scrub: true }
     });
   });
 
@@ -80,97 +70,21 @@ preferences.add("(prefers-reduced-motion: no-preference)", () => {
       root.unmount();
       title.innerHTML = html;
     }
-    document.documentElement.classList.remove("has-depth");
-    gsap.set(".hero-media, .hero-media img, .hero-copy > *, .depth img", { clearProps: "all" });
+    gsap.set(".hero-media, .hero-media img, .hero-copy > *", { clearProps: "all" });
   };
 });
 
-// Povestea și galeria se animă la derulare când mișcarea este permisă.
-const scrolly = gsap.matchMedia();
-scrolly.add("(prefers-reduced-motion: no-preference)", () => {
-  // 5a. Povestea: textul se aprinde cuvânt cu cuvânt, iar pozele plutesc la viteze diferite.
-  const storySection = document.querySelector(".story");
-  const storyParagraphs = gsap.utils.toArray(".story-text .lead, .story-text .lead + p");
-  const storyOriginal = storyParagraphs.map((p) => p.innerHTML);
-  if (storySection && storyParagraphs.length) {
-    const keys = (storySection.dataset.keys || "").toLowerCase().split(",").filter(Boolean);
-    const words = [];
-    storyParagraphs.forEach((p) => {
-      const parts = p.textContent.split(/(\s+)/);
-      p.textContent = "";
-      for (const part of parts) {
-        if (!part.trim()) { p.append(part); continue; }
-        const span = document.createElement("span");
-        span.className = "w";
-        span.textContent = part;
-        const bare = part.toLowerCase().replace(/[^\p{L}]/gu, "");
-        if (keys.some((key) => bare === key.toLowerCase())) span.classList.add("is-key");
-        p.append(span);
-        words.push(span);
-      }
-    });
-    gsap.fromTo(words, { opacity: .14 }, {
-      opacity: 1, stagger: .06, ease: "none",
-      scrollTrigger: { trigger: ".story-text", start: "top 78%", end: "bottom 42%", scrub: true }
-    });
-    const drift = (selector, from, to) => {
-      const element = document.querySelector(selector);
-      if (element) gsap.fromTo(element, from, {
-        ...to, ease: "none",
-        scrollTrigger: { trigger: ".story", start: "top bottom", end: "bottom top", scrub: true }
-      });
-    };
-    drift(".story-large", { y: 70, rotate: -2.5 }, { y: -70, rotate: 1 });
-    drift(".story-small", { y: 150, rotate: 3 }, { y: -150, rotate: -3 });
-    drift(".story-third", { y: 240, rotate: 8 }, { y: -220, rotate: -2 });
-    drift(".story-year", { xPercent: -8, y: 90 }, { xPercent: 8, y: -90 });
-  }
+// Fotografia interiorului se deschide odată cu intrarea secțiunii în ecran.
+gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
+  const story = document.querySelector(".story");
+  const frame = story?.querySelector(".story-image");
+  if (!frame?.querySelector("img")) return;
 
-  // 5b. Atelierul: o fereastră mică în mijloc crește până umple ecranul, ca și cum intri pe ușă;
-  // apoi fiecare poză următoare se deschide din centru peste cea de dinainte.
-  const room = gsap.matchMedia();
-  room.add("(min-width: 0px)", () => {
-    const stage = document.querySelector(".wood-window");
-    const frames = gsap.utils.toArray(".ww-frame");
-    if (!stage || frames.length < 2) return;
-    document.documentElement.classList.add("has-window");
-    const wideScreen = innerWidth >= 900;
-    const start = wideScreen ? "inset(30% 35% 30% 35% round 24px)" : "inset(32% 18% 32% 18% round 20px)";
-    gsap.set(frames[0], { clipPath: start });
-    gsap.set(frames.slice(1), { clipPath: "inset(50% 50% 50% 50% round 24px)" });
-    gsap.set(frames.map((f) => f.querySelector("img")), { scale: 1.3 });
-
-    const steps = frames.length;
-    const story = gsap.timeline({
-      defaults: { ease: "none" },
-      scrollTrigger: {
-        trigger: ".wood-pin", start: "top top", end: () => "+=" + innerHeight * (steps + 1),
-        pin: true, scrub: .7, invalidateOnRefresh: true,
-      }
-    });
-    // 1. Fereastra se deschide.
-    story.to(frames[0], { clipPath: "inset(0% 0% 0% 0% round 6px)", duration: 1.2, ease: "power2.inOut" })
-      .to(frames[0].querySelector("img"), { scale: 1, duration: 1.2, ease: "power2.inOut" }, "<")
-      .to(".ww-shade", { opacity: 1, duration: .4 }, "-=.4")
-      .fromTo(".ww-copy", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: .4 }, "<");
-    // 2. Pozele următoare cresc din centru, una câte una.
-    frames.slice(1).forEach((frame) => {
-      story.to(frame, { clipPath: "inset(0% 0% 0% 0% round 6px)", duration: 1, ease: "power2.inOut" }, "+=.15")
-        .to(frame.querySelector("img"), { scale: 1, duration: 1, ease: "power2.inOut" }, "<");
-    });
-    story.to({}, { duration: .3 });
-
-    return () => {
-      document.documentElement.classList.remove("has-window");
-      gsap.set(".ww-frame", { clearProps: "clipPath" });
-      gsap.set(".ww-frame img", { clearProps: "transform" });
-      gsap.set(".ww-shade, .ww-copy", { clearProps: "all" });
-    };
-  });
-
-  ScrollTrigger.refresh();
-  return () => {
-    room.revert();
-    storyParagraphs.forEach((p, i) => { p.innerHTML = storyOriginal[i]; });
-  };
+  gsap.timeline({
+    defaults: { ease: EASE },
+    scrollTrigger: { trigger: story, start: "top 76%", once: true }
+  })
+    .from(frame, { clipPath: "inset(13% 7% 13% 7%)", duration: .85, clearProps: "clipPath" })
+    .from(frame.querySelector("img"), { scale: 1.07, duration: .95, clearProps: "transform" }, "<")
+    .from(story.querySelector(".story-text"), { y: 22, opacity: .65, duration: .65, clearProps: "transform,opacity" }, "<.16");
 });

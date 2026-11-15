@@ -128,47 +128,61 @@ function setupMenu() {
   show(tabs[0], { animate: false });
 }
 
-// Tabla cu meniul: filtre rapide și desenele de cretă.
+function setupChoices(controls, keyframes, duration) {
+  if (!controls) return false;
+  const buttons = [...controls.querySelectorAll("button[aria-controls]")];
+  const panels = buttons.map((button) => document.getElementById(button.getAttribute("aria-controls")));
+  if (!buttons.length || panels.some((panel) => !panel)) return false;
+
+  const calm = matchMedia("(prefers-reduced-motion: reduce)");
+  let active = -1;
+  let transition;
+
+  function selectPanel(index, animate) {
+    if (index === active) return;
+    transition?.cancel();
+    active = index;
+    panels.forEach((panel, i) => {
+      panel.hidden = i !== index;
+      buttons[i].setAttribute("aria-pressed", String(i === index));
+    });
+    if (animate && !calm.matches) {
+      transition = panels[index].animate(keyframes, {
+        duration, easing: "cubic-bezier(.23, 1, .32, 1)"
+      });
+    }
+  }
+
+  buttons.forEach((button, index) => button.addEventListener("click", () => selectPanel(index, true)));
+  selectPanel(0, false);
+  controls.hidden = buttons.length < 2;
+  return true;
+}
+
 function setupBoard() {
   const board = select(".chalkboard");
   if (!board) return;
-  const buttons = [...board.querySelectorAll(".board-filter")];
-  const items = [...board.querySelectorAll(".board-item")];
-  const groups = [...board.querySelectorAll(".board-group")];
-  const empty = board.querySelector(".board-empty");
-  const status = board.querySelector("[data-board-status]");
-  const calm = matchMedia("(prefers-reduced-motion: reduce)");
+  setupChoices(board.querySelector(".board-filters"), [
+    { opacity: .35, transform: "translateY(10px)" },
+    { opacity: 1, transform: "translateY(0)" }
+  ], 340);
 
-  function apply(filter) {
-    let shown = 0;
-    for (const item of items) {
-      const ok = filter === "toate" || item.dataset.tags.split(" ").includes(filter);
-      item.hidden = !ok;
-      if (ok) shown += 1;
-    }
-    for (const group of groups) group.hidden = !group.querySelector(".board-item:not([hidden])");
-    empty.hidden = shown > 0;
-    status.textContent = `${shown} produse afișate`;
-  }
-
-  for (const button of buttons) {
-    button.addEventListener("click", () => {
-      if (button.getAttribute("aria-pressed") === "true") return;
-      for (const other of buttons) other.setAttribute("aria-pressed", String(other === button));
-      const run = () => apply(button.dataset.filter);
-      // Produsele se rearanjează animat, acolo unde browserul știe.
-      if (document.startViewTransition && !calm.matches) document.startViewTransition(run);
-      else run();
-    });
-  }
-
-  // Desenele se desenează când tabla ajunge în ecran.
   new IntersectionObserver((entries, observer) => {
     if (entries.some((entry) => entry.isIntersecting)) {
       board.classList.add("is-drawn");
       observer.disconnect();
     }
   }, { threshold: .25 }).observe(board);
+}
+
+function setupGallery() {
+  const gallery = select(".gallery");
+  if (!gallery) return;
+  const enabled = setupChoices(gallery.querySelector(".gallery-controls"), [
+    { clipPath: "inset(0 14% 0 14%)", opacity: .45 },
+    { clipPath: "inset(0 0 0 0)", opacity: 1 }
+  ], 540);
+  if (enabled) gallery.classList.add("is-interactive");
 }
 
 function setupReviews() {
@@ -255,6 +269,7 @@ setupNavigation();
 setupHours();
 setupMenu();
 setupBoard();
+setupGallery();
 setupHeader();
 setupReviews();
 loadMotion();
