@@ -23,7 +23,7 @@ def build(data, esc, image):
             continue
         key = product.get("imagine")
         if key in data["imagini"]:
-            photo = f'<div class="special-photo">{image(key, sizes="(min-width: 900px) 30vw, 80vw")}</div>'
+            photo = f'<div class="special-photo">{image(key, sizes="(min-width: 1600px) 640px, (min-width: 900px) 44vw, 86vw")}</div>'
         else:
             photo = f'<div class="special-photo is-type" aria-hidden="true"><span>{esc(product["nume"])}</span></div>'
         tint = spec.get("tente", {}).get(name, "#c08a5e")
@@ -31,7 +31,7 @@ def build(data, esc, image):
         kicker = f'<span class="special-kicker">{esc(story["eticheta"])}</span>' if story.get("eticheta") else ""
         photo_note = '<span class="product-photo-note">Foto ilustrativă</span>' if data["imagini"].get(key, {}).get("ilustrativa") else ""
         detail = story.get("text") or product.get("descriere")
-        detail_html = f'<p>{esc(detail)}</p>' if detail else ""
+        detail_html = f'<p class="special-description">{esc(detail)}</p>' if detail else ""
         cards.append(
             f'<li class="special" style="--tint-own:{esc(tint)}">'
             f'<div class="special-visual">{photo}</div>'

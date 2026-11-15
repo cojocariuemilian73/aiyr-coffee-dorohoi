@@ -360,7 +360,7 @@ function setupSpecials() {
   if (cards.length < 2) return;
 
   const dots = [...track.querySelectorAll(".specials-dots span")];
-  const enabled = matchMedia("(min-height: 560px)");
+  const enabled = matchMedia("(min-height: 660px), (min-width: 900px) and (min-height: 560px)");
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
   const wide = matchMedia("(min-width: 900px)");
   const last = cards.length - 1;

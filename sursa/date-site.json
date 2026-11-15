@@ -202,7 +202,7 @@
           "etichete": [
             "dulce"
           ],
-          "imagine": "cafeaCroissant"
+          "imagine": "croissantUmplut"
         }
       ]
     },
@@ -315,6 +315,10 @@
     {
       "nume": "Regina Ferraz / Pexels",
       "url": "https://www.pexels.com/photo/6133310/"
+    },
+    {
+      "nume": "Valeria Boltneva / Pexels",
+      "url": "https://www.pexels.com/photo/delicious-croissant-with-pistachio-cream-filling-36612306/"
     }
   ],
   "imagini": {
@@ -382,6 +386,13 @@
       "alt": "Limonadă cu gheață într-un pahar.",
       "ilustrativa": true
     },
+    "croissantUmplut": {
+      "fisier": "meniu-croissant-umplut.webp",
+      "latime": 1000,
+      "inaltime": 1000,
+      "alt": "Croissant cu cremă de fistic pe o farfurie.",
+      "ilustrativa": true
+    },
     "red-velvet": {
       "fisier": "meniu-red-velvet.webp",
       "latime": 570,
@@ -402,7 +413,7 @@
     "demo": true,
     "specialitati": {
       "titlu": "Din meniu",
-      "text": "Cappuccino, limonadă și croissant umplut.",
+      "text": "Cafea, limonadă și ceva dulce.",
       "produse": [
         "Cappuccino",
         "Limonadă",
@@ -412,6 +423,17 @@
         "Cappuccino": "#c08a5e",
         "Limonadă": "#6fa86a",
         "Croissant umplut": "#e0ac4f"
+      },
+      "povesti": {
+        "Cappuccino": {
+          "text": "Un espresso cu gust pronunțat, rotunjit de lapte și acoperit cu spumă fină. Merge bine cu un croissant, când ai timp să mai stai la masă."
+        },
+        "Limonadă": {
+          "text": "Rece, cu gust de lămâie și un echilibru între dulce și acrișor. O alegere răcoritoare pentru o după-amiază caldă pe terasă."
+        },
+        "Croissant umplut": {
+          "text": "Croissant fraged, cu straturi de foietaj și umplutură dulce. Îl poți lua lângă cafea, cu Bueno, Pistachio sau White Snow."
+        }
       }
     },
     "roata": {
