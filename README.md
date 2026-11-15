@@ -1,6 +1,6 @@
 # AIYR Coffee Dorohoi
 
-Site-ul AIYR Coffee Dorohoi, adaptat din șablonul de cafenea. Poți deschide pagina direct din copia locală.
+Site-ul AIYR Coffee Dorohoi, adaptat din șablonul de cafenea. [Deschide site-ul pe GitHub Pages](https://cojocariuemilian73.github.io/aiyr-coffee-dorohoi/).
 
 - Deschide `index.html` pentru site și `meniu.html` pentru pagina de meniu.
 - Editează `sursa/date-site.json` și rulează `python sursa/genereaza.py` pentru a actualiza paginile.
