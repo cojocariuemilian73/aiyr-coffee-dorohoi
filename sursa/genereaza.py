@@ -117,16 +117,8 @@ def image(key, *, hero=False, sizes="(min-width: 900px) 45vw, 100vw"):
     return f'<picture><source type="image/avif" srcset="{esc(avif)}" sizes="{sizes}">{img}</picture>'
 
 
-def gallery_frame(key, index):
-    return (f'<figure class="gallery-frame" id="galerie-cadru-{index}">'
-            f'<div class="gallery-photo">{image(key, sizes="(min-width: 900px) 64vw, 92vw")}</div></figure>')
-
-
-def gallery_button(key, index):
-    caption = esc(DATA["imagini"][key]["titlu"])
-    return (f'<button type="button" aria-controls="galerie-cadru-{index}" aria-pressed="false">'
-            f'<span class="gallery-thumb" aria-hidden="true">{image(key, sizes="88px")}</span>'
-            f'<span>{caption}</span></button>')
+def gallery_frame(key):
+    return f'<figure class="gallery-frame">{image(key, sizes="(min-width: 900px) 56vw, 83vw")}</figure>'
 
 
 def menu_tab(category, index):
@@ -168,7 +160,6 @@ def menu_panel(category):
 DOODLES = {
     "cana": '<svg class="doodle doodle-cup" viewBox="0 0 120 100"><path pathLength="1" d="M22 40c20 2 40 2 58 0 1 10 1 18-2 26-6 14-48 14-54 0-3-8-3-16-2-26Z"/><path pathLength="1" d="M80 46c16-2 16 20-2 18"/><path pathLength="1" d="M8 84c30 8 74 8 104-1"/><path pathLength="1" d="M42 30c-7-8 7-12 0-21M58 30c-7-8 7-12 0-21"/></svg>',
     "lamaie": '<svg class="doodle doodle-lemon" viewBox="0 0 100 100"><path pathLength="1" d="M50 8a42 42 0 1 1-.1 0Z"/><path pathLength="1" d="M50 18a32 32 0 1 1-.1 0Z"/><path pathLength="1" d="M50 18v64M18 50h64M27 27l46 46M73 27 27 73"/></svg>',
-    "croissant": '<svg class="doodle doodle-croissant" viewBox="0 0 140 80"><path pathLength="1" d="M8 62C18 18 122 16 132 62c-18-12-30-8-34-4-10-10-46-10-56 0-6-6-18-8-34 4Z"/><path pathLength="1" d="M42 58c-2-14 2-26 10-34M70 54c0-14 0-28 0-36M98 58c2-14-2-26-10-34"/></svg>',
 }
 
 
@@ -369,6 +360,8 @@ values = {
     "storyLead": rich(story.get("lead", "")),
     "storyText": rich(story.get("text", "")),
     "galleryTitle": rich(TEXT["galerie"]["titlu"]),
+    "galleryLead": rich(TEXT["galerie"].get("lead", "")),
+    "galleryText": rich(TEXT["galerie"].get("text", "")),
     "menuTitle": rich(TEXT["meniu"]),
     "reviewsTitle": rich(TEXT["recenzii"]),
     "locationsTitle": rich(TEXT["locatii"]),
@@ -434,8 +427,7 @@ values = {
     "mapD": esc(links["harta"] or map_embed(dorohoi)),
     "mapB": esc(map_embed(botosani)),
     "storyImage": image(story["imagineMare"], sizes="(min-width: 900px) 55vw, 92vw") if story.get("imagineMare") else "",
-    "galleryFrames": "".join(gallery_frame(key, i) for i, key in enumerate(gallery)),
-    "galleryButtons": "".join(gallery_button(key, i) for i, key in enumerate(gallery)),
+    "galleryFrames": "".join(gallery_frame(key) for key in gallery),
     "menuTabs": "".join(menu_tab(row, i) for i, row in enumerate(DATA["meniu"])),
     "menuPanels": "".join(menu_panel(row) for row in DATA["meniu"]),
     "menuBoard": menu_board() if menu_available else "",

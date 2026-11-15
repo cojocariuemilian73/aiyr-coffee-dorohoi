@@ -91,11 +91,23 @@
 
     <!-- gallery:start -->
     <section class="section gallery" id="atelier" aria-labelledby="gallery-title">
-      <div class="shell">
-        <h2 id="gallery-title">{{galleryTitle}}</h2>
-        <div class="gallery-grid">
-          <div class="gallery-frames">{{galleryFrames}}</div>
-          <div class="gallery-controls" role="group" aria-label="Alege o fotografie" hidden>{{galleryButtons}}</div>
+      <div class="shell gallery-grid">
+        <div class="gallery-story">
+          <h2 id="gallery-title">{{galleryTitle}}</h2>
+          <p class="gallery-lead">{{galleryLead}}</p>
+          <p class="gallery-copy">{{galleryText}}</p>
+        </div>
+        <div class="gallery-media">
+          <div class="gallery-track" id="galerie-fotografii" role="group" aria-label="Fotografii de la AIYR Coffee" tabindex="0">{{galleryFrames}}</div>
+          <div class="gallery-controls" hidden>
+            <p class="gallery-hint">Glisează <span>sau derulează</span> fotografiile</p>
+            <div class="gallery-progress" aria-hidden="true"><span></span></div>
+            <div class="gallery-arrows" role="group" aria-label="Navigare în fotografii">
+              <button type="button" aria-label="Fotografia anterioară" aria-controls="galerie-fotografii">{{arrowLeft}}</button>
+              <button type="button" aria-label="Fotografia următoare" aria-controls="galerie-fotografii">{{arrowRight}}</button>
+            </div>
+            <span class="sr-only gallery-status" role="status"></span>
+          </div>
         </div>
       </div>
     </section>

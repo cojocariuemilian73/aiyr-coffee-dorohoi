@@ -178,125 +178,124 @@ function setupBoard() {
 function setupGallery() {
   const gallery = select(".gallery");
   if (!gallery) return;
-  const controls = gallery.querySelector(".gallery-controls");
-
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    if (setupChoices(controls, [], 0)) gallery.classList.add("is-interactive");
-    return;
-  }
-
-  const stage = gallery.querySelector(".gallery-frames");
-  const frames = [...stage.querySelectorAll(".gallery-frame")];
-  const buttons = [...controls.querySelectorAll("button")];
+  const track = gallery.querySelector(".gallery-track");
+  const frames = [...track.children];
   if (frames.length < 2) return;
 
-  const step = 360 / frames.length;
-  let angle = 0;
-  let targetAngle = 0;
-  let radius = 0;
-  let animation = 0;
-  let wheelTimer = 0;
+  const controls = gallery.querySelector(".gallery-controls");
+  const progress = controls.querySelector(".gallery-progress span");
+  const status = controls.querySelector(".gallery-status");
+  const [prev, next] = controls.querySelectorAll("button");
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  const last = frames.length - 1;
+  let active = -1;
+  let target = null;
   let drag;
-  const wrap = (index) => (index % frames.length + frames.length) % frames.length;
+  let wheelTimer;
+  let wheelDistance = 0;
+  let wheelHandled = false;
 
-  function render() {
-    frames.forEach((frame, index) => {
-      const radians = (index * step + angle) * Math.PI / 180;
-      const side = Math.sin(radians);
-      const front = (Math.cos(radians) + 1) / 2;
-      frame.style.transform = `translate(-50%, -50%) translate3d(${side * radius}px, ${(1 - front) * -32}px, 0) perspective(1100px) rotateY(${side * -38}deg) scale(${.52 + front * .48})`;
-      frame.style.filter = `brightness(${.35 + front * .65})`;
-      frame.style.zIndex = String(Math.round(front * 100));
-    });
+  function offset(index) {
+    return Math.min(frames[index].offsetLeft, track.scrollWidth - track.clientWidth);
   }
 
-  function updateSize() {
-    radius = stage.clientWidth * .47;
-    render();
-  }
-
-  function selectFrame(index) {
-    frames.forEach((frame, i) => {
-      frame.setAttribute("aria-hidden", String(i !== index));
-      buttons[i].setAttribute("aria-pressed", String(i === index));
-    });
-  }
-
-  function snap(target) {
-    clearTimeout(wheelTimer);
-    cancelAnimationFrame(animation);
-    const from = angle;
-    const distance = target - from;
-    targetAngle = target;
-    selectFrame(wrap(-Math.round(target / step)));
-    if (distance === 0) return;
-
-    const start = performance.now();
-    const duration = Math.min(660, 440 + Math.abs(distance) * 1.4);
-
-    function tick(now) {
-      const progress = Math.min(1, (now - start) / duration);
-      angle = from + distance * (1 - (1 - progress) ** 4);
-      render();
-      if (progress < 1) animation = requestAnimationFrame(tick);
+  function nearest() {
+    let index = 0;
+    for (let i = 1; i <= last; i++) {
+      if (Math.abs(track.scrollLeft - offset(i)) < Math.abs(track.scrollLeft - offset(index))) index = i;
     }
-    animation = requestAnimationFrame(tick);
+    return index;
   }
 
-  function moveBy(direction) {
-    snap(targetAngle - direction * step);
+  function update(index) {
+    if (index === active) return;
+    active = index;
+    const description = frames[index].querySelector("img").alt;
+    progress.style.transform = `translateX(${index * 100}%)`;
+    status.textContent = `Fotografia ${index + 1} din ${frames.length}. ${description}`;
+    prev.setAttribute("aria-disabled", String(index === 0));
+    next.setAttribute("aria-disabled", String(index === last));
   }
 
-  buttons.forEach((button, index) => button.addEventListener("click", () => {
-    const distance = ((-index * step - angle + 180) % 360 + 360) % 360 - 180;
-    snap(angle + distance);
-  }));
+  function sync() {
+    if (target !== null && Math.abs(track.scrollLeft - offset(target)) > 2) return;
+    target = null;
+    update(nearest());
+  }
 
-  stage.addEventListener("pointerdown", (event) => {
-    if (event.button !== 0 || drag) return;
-    clearTimeout(wheelTimer);
-    cancelAnimationFrame(animation);
-    drag = { id: event.pointerId, x: event.clientX, angle, distance: 0 };
-    stage.setPointerCapture(event.pointerId);
-  });
-  stage.addEventListener("pointermove", (event) => {
-    if (drag?.id !== event.pointerId) return;
-    drag.distance = event.clientX - drag.x;
-    if (Math.abs(drag.distance) > 6) stage.classList.add("is-dragging");
-    angle = drag.angle + drag.distance * (stage.clientWidth < 540 ? .55 : .32);
-    render();
+  function show(index) {
+    if (index < 0 || index > last) return;
+    target = index;
+    update(index);
+    track.scrollTo({ left: offset(index), behavior: reducedMotion.matches ? "auto" : "smooth" });
+  }
+
+  prev.addEventListener("click", () => show(active - 1));
+  next.addEventListener("click", () => show(active + 1));
+  track.addEventListener("scroll", sync, { passive: true });
+  track.addEventListener("keydown", (event) => {
+    const steps = { ArrowLeft: active - 1, ArrowRight: active + 1, Home: 0, End: last };
+    const index = steps[event.key];
+    if (typeof index !== "number") return;
+    event.preventDefault();
+    show(index);
   });
 
-  function finishDrag(event) {
+  track.addEventListener("pointerdown", (event) => {
+    if (!event.isPrimary || event.button !== 0 || drag) return;
+    target = null;
+    if (event.pointerType === "touch") return; // Native swipe and vertical scrolling.
+    track.classList.add("is-dragging");
+    track.scrollTo({ left: track.scrollLeft, behavior: "auto" });
+    drag = { id: event.pointerId, x: event.clientX, left: track.scrollLeft, index: nearest() };
+    track.setPointerCapture(event.pointerId);
+  });
+
+  track.addEventListener("pointermove", (event) => {
     if (drag?.id !== event.pointerId) return;
-    const origin = Math.round(drag.angle / step);
-    let target = Math.round(angle / step);
-    if (event.type === "pointerup" && origin === target && Math.abs(drag.distance) > 28) {
-      target += Math.sign(drag.distance);
+    track.scrollLeft = drag.left - (event.clientX - drag.x);
+  });
+
+  function release(event) {
+    if (drag?.id !== event.pointerId) return;
+    const distance = drag.x - event.clientX;
+    let index = nearest();
+    if (event.type === "pointerup" && index === drag.index && Math.abs(distance) >= 32) {
+      index = Math.max(0, Math.min(last, index + Math.sign(distance)));
     }
     drag = undefined;
-    stage.classList.remove("is-dragging");
-    snap(target * step);
+    track.classList.remove("is-dragging");
+    show(index);
   }
-  stage.addEventListener("pointerup", finishDrag);
-  stage.addEventListener("pointercancel", finishDrag);
-  stage.addEventListener("lostpointercapture", finishDrag);
 
-  stage.addEventListener("wheel", (event) => {
-    if (drag || Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
+  track.addEventListener("pointerup", release);
+  track.addEventListener("pointercancel", release);
+  track.addEventListener("lostpointercapture", release);
+
+  track.addEventListener("wheel", (event) => {
+    if (event.ctrlKey || drag) return;
+    if (Math.abs(event.deltaX) >= Math.abs(event.deltaY) || event.shiftKey) {
+      target = null;
+      return;
+    }
+    if (!event.cancelable) return;
+
+    // One photo per wheel gesture. At either end, the next gesture scrolls the page normally.
+    const nextIndex = active + Math.sign(event.deltaY);
+    if (!wheelHandled && (nextIndex < 0 || nextIndex > last)) return;
     event.preventDefault();
-    cancelAnimationFrame(animation);
     clearTimeout(wheelTimer);
-    angle -= event.deltaX * .32;
-    render();
-    wheelTimer = setTimeout(() => snap(Math.round(angle / step) * step), 140);
+    wheelTimer = setTimeout(() => {
+      wheelDistance = 0;
+      wheelHandled = false;
+    }, 160);
+    if (wheelHandled) return;
+    const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? track.clientHeight : 1;
+    wheelDistance += event.deltaY * unit;
+    if (Math.abs(wheelDistance) < 24) return;
+    wheelHandled = true;
+    show(nextIndex);
   }, { passive: false });
-
-  gallery.addEventListener("keydown", (event) => {
-    if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
-    event.preventDefault();
-    moveBy(event.key === "ArrowRight" ? 1 : -1);
-  });
 
   if ("IntersectionObserver" in window) {
     gallery.classList.add("has-gallery-intro");
@@ -304,17 +303,17 @@ function setupGallery() {
       if (!entries.some((entry) => entry.isIntersecting)) return;
       gallery.classList.add("is-gallery-visible");
       observer.disconnect();
-    }, { threshold: .12 }).observe(stage);
+    }, { threshold: .12 }).observe(track);
   }
 
-  stage.tabIndex = 0;
-  stage.setAttribute("role", "group");
-  stage.setAttribute("aria-label", "Carusel foto. Folosește săgețile stânga și dreapta.");
-  gallery.classList.add("is-interactive", "is-carousel");
+  track.classList.add("is-interactive");
+  controls.style.setProperty("--gallery-count", frames.length);
   controls.hidden = false;
-  selectFrame(0);
-  updateSize();
-  new ResizeObserver(updateSize).observe(stage);
+  sync();
+  new ResizeObserver(() => {
+    target = null;
+    sync();
+  }).observe(track);
 }
 
 function setupReviews() {
