@@ -10,7 +10,11 @@ function setupNavigation() {
   if (typeof dialog.showModal !== "function") return;
 
   toggle.hidden = false;
-  toggle.addEventListener("click", () => dialog.showModal());
+  toggle.addEventListener("click", () => {
+    dialog.showModal();
+    toggle.setAttribute("aria-expanded", "true");
+  });
+  dialog.addEventListener("close", () => toggle.setAttribute("aria-expanded", "false"));
   dialog.addEventListener("click", (event) => {
     const link = event.target.closest('a[href^="#"]');
     if (!link) return;
@@ -153,7 +157,9 @@ function setupChoices(controls, keyframes, duration) {
     }
   }
 
-  buttons.forEach((button, index) => button.addEventListener("click", () => selectPanel(index, true)));
+  buttons.forEach((button, index) => {
+    button.addEventListener("click", (event) => selectPanel(index, event.detail > 0));
+  });
   selectPanel(0, false);
   controls.hidden = buttons.length < 2;
   return true;
@@ -165,7 +171,7 @@ function setupBoard() {
   setupChoices(board.querySelector(".board-filters"), [
     { opacity: .35, transform: "translateY(10px)" },
     { opacity: 1, transform: "translateY(0)" }
-  ], 340);
+  ], 240);
 
   new IntersectionObserver((entries, observer) => {
     if (entries.some((entry) => entry.isIntersecting)) {
@@ -223,22 +229,22 @@ function setupGallery() {
     update(nearest());
   }
 
-  function show(index) {
+  function show(index, animate = true) {
     if (index < 0 || index > last) return;
     target = index;
     update(index);
-    track.scrollTo({ left: offset(index), behavior: reducedMotion.matches ? "auto" : "smooth" });
+    track.scrollTo({ left: offset(index), behavior: animate && !reducedMotion.matches ? "smooth" : "auto" });
   }
 
-  prev.addEventListener("click", () => show(active - 1));
-  next.addEventListener("click", () => show(active + 1));
+  prev.addEventListener("click", (event) => show(active - 1, event.detail > 0));
+  next.addEventListener("click", (event) => show(active + 1, event.detail > 0));
   track.addEventListener("scroll", sync, { passive: true });
   track.addEventListener("keydown", (event) => {
     const steps = { ArrowLeft: active - 1, ArrowRight: active + 1, Home: 0, End: last };
     const index = steps[event.key];
     if (typeof index !== "number") return;
     event.preventDefault();
-    show(index);
+    show(index, false);
   });
 
   track.addEventListener("pointerdown", (event) => {
@@ -322,15 +328,32 @@ function setupReviews() {
   if (!track || !nav) return;
   const prev = select(".reviews-prev");
   const next = select(".reviews-next");
-  const step = () => track.querySelector(".review-card").getBoundingClientRect().width + 20;
+  const cards = [...track.querySelectorAll(".review-card")];
+  if (cards.length < 2) return;
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  const limit = () => track.scrollWidth - track.clientWidth;
   const update = () => {
-    const max = track.scrollWidth - track.clientWidth - 2;
-    nav.hidden = max <= 0;
-    prev.disabled = track.scrollLeft <= 2;
-    next.disabled = track.scrollLeft >= max;
+    const max = limit();
+    nav.hidden = max <= 2;
+    prev.setAttribute("aria-disabled", String(track.scrollLeft <= 2));
+    next.setAttribute("aria-disabled", String(track.scrollLeft >= max - 2));
   };
-  prev.addEventListener("click", () => track.scrollBy({ left: -step(), behavior: "smooth" }));
-  next.addEventListener("click", () => track.scrollBy({ left: step(), behavior: "smooth" }));
+
+  function move(direction, event) {
+    if (event.currentTarget.getAttribute("aria-disabled") === "true") return;
+    const origin = cards[0].offsetLeft;
+    const max = limit();
+    const positions = cards.map((card) => Math.min(max, card.offsetLeft - origin));
+    const left = direction > 0
+      ? positions.find((position) => position > track.scrollLeft + 2)
+      : positions.findLast((position) => position < track.scrollLeft - 2);
+    if (left === undefined) return;
+    const animate = event.detail > 0 && !reducedMotion.matches;
+    track.scrollTo({ left, behavior: animate ? "smooth" : "auto" });
+  }
+
+  prev.addEventListener("click", (event) => move(-1, event));
+  next.addEventListener("click", (event) => move(1, event));
   track.addEventListener("scroll", update, { passive: true });
   addEventListener("resize", update);
   update();
@@ -356,9 +379,36 @@ function loadMotion() {
 
 function setupHeader() {
   const header = select(".site-header");
-  const update = () => header.classList.toggle("is-scrolled", scrollY > 28);
+  const links = selectAll('.desktop-nav a[href^="#"], .mobile-nav nav a[href^="#"]');
+  const sections = [...new Set(links.map((link) => link.hash))]
+    .map((hash) => document.getElementById(hash.slice(1))).filter(Boolean);
+  let current = "";
+  let frame = 0;
+
+  function update() {
+    frame = 0;
+    header.classList.toggle("is-scrolled", scrollY > 28);
+    const marker = Math.max(header.offsetHeight + 12, Math.min(innerHeight * .28, 220));
+    const section = sections.find((entry) => {
+      const bounds = entry.getBoundingClientRect();
+      return bounds.top <= marker && bounds.bottom > marker;
+    });
+    const hash = section ? "#" + section.id : "";
+    if (hash === current) return;
+    current = hash;
+    for (const link of links) {
+      if (link.hash === current) link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    }
+  }
+
+  function schedule() {
+    if (!frame) frame = requestAnimationFrame(update);
+  }
+
   update();
-  addEventListener("scroll", update, { passive: true });
+  addEventListener("scroll", schedule, { passive: true });
+  addEventListener("resize", schedule);
 }
 
 // Titlul păstrează spațiul fiecărei litere înainte de apariția ei.
@@ -404,7 +454,7 @@ function setupTypeTitle() {
   const cursor = document.createElement("span");
   cursor.className = "type-cursor";
   letters[0].letter.before(cursor);
-  let timing = 490;
+  let timing = 150;
   for (const { letter, word, key } of letters) {
     const lastInWord = !letter.nextSibling;
     setTimeout(() => {
@@ -412,9 +462,9 @@ function setupTypeTitle() {
       letter.after(cursor);
       if (key && lastInWord) word.classList.add("is-gold");
     }, timing);
-    timing += 82 + (lastInWord ? 105 : 0);
+    timing += 56 + (lastInWord ? 76 : 0);
   }
-  setTimeout(() => cursor.classList.add("is-done"), timing + 950);
+  setTimeout(() => cursor.classList.add("is-done"), timing + 500);
 }
 
 setupTypeTitle();
