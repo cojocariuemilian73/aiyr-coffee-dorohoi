@@ -84,10 +84,14 @@ def build(data, esc, image):
         '</svg>'
     )
 
-    voucher = extra["voucher"]
+    voucher = extra.get("voucher")
+    voucher_options = voucher or {}
     mail = extra.get("email", {})
     config = {
         "demo": demo,
+        "voucherId": voucher_options.get("id", "voucher"),
+        "voucherLabel": voucher_options.get("eticheta", "Espresso din partea casei"),
+        "voucherAfterPage": voucher_options.get("dupaPrimulEcran", False),
         "prizes": [p["nume"] for p in prizes],
         "wheelValid": wheel["valabilitate"],
         "prefix": data["texte"]["logo"]["mare"],
@@ -95,18 +99,20 @@ def build(data, esc, image):
         "supabaseKey": "" if demo else mail.get("supabaseCheie", ""),
     }
     config_json = json.dumps(config, ensure_ascii=False).replace("<", "\\u003c")
-    voucher_button = '<button type="button" class="button button-outline" data-voucher>Încearcă voucherul demo</button>' if demo else ""
     offers = (
         '<section class="section offers" id="oferte" aria-labelledby="offers-title"><div class="shell">'
         '<div class="offer-grid">'
         f'<article class="offer offer-wheel"><h3 id="offers-title">{esc(wheel["titlu"])}</h3><p>{esc(wheel["text"])}</p>'
         f'<button type="button" class="wheel-wrap" aria-label="Învârte roata">{wheel_svg}</button>'
         '<button type="button" class="button button-dark" data-spin>Învârte roata</button>'
-        f'<p class="wheel-result" role="status"></p>{voucher_button}</article>'
+        '<p class="wheel-result" role="status"></p></article>'
         '</div></div>'
         f'<script id="extra-config" type="application/json">{config_json}</script>'
         '</section>'
     )
+
+    if not voucher:
+        return {"offers": offers, "afterMenu": specials, "modal": ""}
 
     # --- Fereastra cu voucherul: e-mail, cod de confirmare, voucher ---
     email_field = '<input id="welcome-email" type="email" value="demo@example.com" readonly>' if demo else '<input id="welcome-email" type="email" autocomplete="email" required placeholder="nume@exemplu.ro">'
@@ -114,8 +120,8 @@ def build(data, esc, image):
     request_label = "Generează codul de probă" if demo else "Trimite-mi codul"
     sent_message = '<p>Introdu codul afișat mai jos.</p>' if demo else '<p>Ți-am trimis un cod de 6 cifre la <strong class="welcome-to"></strong>. Scrie-l aici.</p>'
     voucher_message = '<p>Voucher demonstrativ. Codul este pentru prezentare.</p>' if demo else '<p>Gata! Arată voucherul la bar, la prima vizită.</p>'
-    ticket_label = "Voucher espresso · demo" if demo else "Espresso din partea casei"
-    voucher_shortcut = "Voucherul demo" if demo else "Voucherul tău ☕"
+    ticket_label = esc(config["voucherLabel"]) + (" · demo" if demo else "")
+    voucher_shortcut = '<button type="button" class="voucher-pill" hidden>Voucherul tău</button>' if not demo else ""
     voucher_image = voucher.get("imagine", "vEspresso")
     modal = (
         '<dialog class="welcome" aria-labelledby="welcome-title">'
@@ -146,6 +152,6 @@ def build(data, esc, image):
         '<strong class="ticket-code"></strong><span class="ticket-until"></span></div></div>'
         f'<small>{esc(voucher["conditii"])}</small></div>'
         '</div></dialog>'
-        f'<button type="button" class="voucher-pill" hidden>{voucher_shortcut}</button>'
+        f'{voucher_shortcut}'
     )
     return {"offers": offers, "afterMenu": specials, "modal": modal}

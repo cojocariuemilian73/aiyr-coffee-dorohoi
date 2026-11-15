@@ -178,11 +178,128 @@ function setupBoard() {
 function setupGallery() {
   const gallery = select(".gallery");
   if (!gallery) return;
-  const enabled = setupChoices(gallery.querySelector(".gallery-controls"), [
-    { clipPath: "inset(0 14% 0 14%)", opacity: .45 },
-    { clipPath: "inset(0 0 0 0)", opacity: 1 }
-  ], 540);
-  if (enabled) gallery.classList.add("is-interactive");
+  const controls = gallery.querySelector(".gallery-controls");
+
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (setupChoices(controls, [], 0)) gallery.classList.add("is-interactive");
+    return;
+  }
+
+  const stage = gallery.querySelector(".gallery-frames");
+  const frames = [...stage.querySelectorAll(".gallery-frame")];
+  const buttons = [...controls.querySelectorAll("button")];
+  if (frames.length < 2) return;
+
+  const step = 360 / frames.length;
+  let angle = 0;
+  let radius = 0;
+  let animation = 0;
+  let wheelTimer = 0;
+  let drag;
+  const wrap = (index) => (index % frames.length + frames.length) % frames.length;
+
+  function render() {
+    frames.forEach((frame, index) => {
+      const radians = (index * step + angle) * Math.PI / 180;
+      const side = Math.sin(radians);
+      const front = (Math.cos(radians) + 1) / 2;
+      frame.style.transform = `translate(-50%, -50%) translate3d(${side * radius}px, ${(1 - front) * -18}px, 0) perspective(1200px) rotateY(${side * -28}deg) scale(${.54 + front * .46})`;
+      frame.style.filter = `brightness(${.42 + front * .58})`;
+      frame.style.zIndex = String(Math.round(front * 100));
+    });
+  }
+
+  function updateSize() {
+    radius = Math.min(stage.clientWidth * .28, 265);
+    render();
+  }
+
+  function selectFrame(index) {
+    frames.forEach((frame, i) => {
+      frame.setAttribute("aria-hidden", String(i !== index));
+      buttons[i].setAttribute("aria-pressed", String(i === index));
+    });
+  }
+
+  function snap(target) {
+    clearTimeout(wheelTimer);
+    cancelAnimationFrame(animation);
+    const from = angle;
+    const start = performance.now();
+    selectFrame(wrap(-Math.round(target / step)));
+
+    function tick(now) {
+      const progress = Math.min(1, (now - start) / 620);
+      angle = from + (target - from) * (1 - (1 - progress) ** 3);
+      render();
+      if (progress < 1) animation = requestAnimationFrame(tick);
+    }
+    animation = requestAnimationFrame(tick);
+  }
+
+  function moveBy(direction) {
+    snap((Math.round(angle / step) - direction) * step);
+  }
+
+  buttons.forEach((button, index) => button.addEventListener("click", () => {
+    const distance = ((-index * step - angle + 180) % 360 + 360) % 360 - 180;
+    snap(angle + distance);
+  }));
+
+  stage.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || drag) return;
+    clearTimeout(wheelTimer);
+    cancelAnimationFrame(animation);
+    drag = { id: event.pointerId, x: event.clientX, angle, distance: 0 };
+    stage.setPointerCapture(event.pointerId);
+  });
+  stage.addEventListener("pointermove", (event) => {
+    if (drag?.id !== event.pointerId) return;
+    drag.distance = event.clientX - drag.x;
+    if (Math.abs(drag.distance) > 6) stage.classList.add("is-dragging");
+    angle = drag.angle + drag.distance * (stage.clientWidth < 540 ? .55 : .32);
+    render();
+  });
+
+  function finishDrag(event) {
+    if (drag?.id !== event.pointerId) return;
+    const origin = Math.round(drag.angle / step);
+    let target = Math.round(angle / step);
+    if (event.type === "pointerup" && origin === target && Math.abs(drag.distance) > 28) {
+      target += Math.sign(drag.distance);
+    }
+    drag = undefined;
+    stage.classList.remove("is-dragging");
+    snap(target * step);
+  }
+  stage.addEventListener("pointerup", finishDrag);
+  stage.addEventListener("pointercancel", finishDrag);
+  stage.addEventListener("lostpointercapture", finishDrag);
+
+  stage.addEventListener("wheel", (event) => {
+    if (drag || Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
+    event.preventDefault();
+    cancelAnimationFrame(animation);
+    clearTimeout(wheelTimer);
+    angle -= event.deltaX * .32;
+    render();
+    wheelTimer = setTimeout(() => snap(Math.round(angle / step) * step), 140);
+  }, { passive: false });
+
+  gallery.addEventListener("keydown", (event) => {
+    if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+    event.preventDefault();
+    moveBy(event.key === "ArrowRight" ? 1 : -1);
+  });
+
+  stage.tabIndex = 0;
+  stage.setAttribute("role", "group");
+  stage.setAttribute("aria-label", "Carusel foto. Folosește săgețile stânga și dreapta.");
+  gallery.classList.add("is-interactive", "is-carousel");
+  controls.hidden = false;
+  selectFrame(0);
+  updateSize();
+  new ResizeObserver(updateSize).observe(stage);
 }
 
 function setupReviews() {
@@ -230,41 +347,63 @@ function setupHeader() {
   addEventListener("scroll", update, { passive: true });
 }
 
-// Titlul de sus: rândurile apar pe rând, încet, apoi cuvintele-cheie se fac aurii.
-function setupSteamTitle() {
+// Titlul păstrează spațiul fiecărei litere înainte de apariția ei.
+function setupTypeTitle() {
   const title = select(".hero h1");
-  if (!title) return;
+  if (!title || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const keys = (title.dataset.keys || "").toLowerCase().split(",").filter(Boolean);
   title.setAttribute("aria-label", title.textContent.replace(/\s+/g, " ").trim());
-  const words = [];
-  const split = (node) => {
+  const letters = [];
+
+  function split(node) {
     for (const child of [...node.childNodes]) {
-      if (child.nodeType !== 3) { split(child); continue; }
-      const frag = document.createDocumentFragment();
+      if (child.nodeType !== Node.TEXT_NODE) {
+        split(child);
+        continue;
+      }
+      const fragment = document.createDocumentFragment();
       for (const part of child.textContent.split(/(\s+)/)) {
-        if (!part) continue;
-        if (!part.trim()) { frag.append(part); continue; }
+        if (!part.trim()) {
+          fragment.append(part);
+          continue;
+        }
         const word = document.createElement("span");
         word.className = "sw";
         word.setAttribute("aria-hidden", "true");
-        const bare = part.toLowerCase().replace(/[^\p{L}]/gu, "");
-        if (keys.includes(bare)) word.classList.add("is-key");
-        word.textContent = part;
-        words.push(word);
-        frag.append(word);
+        const key = keys.includes(part.toLowerCase().replace(/[^\p{L}]/gu, ""));
+        for (const char of part) {
+          const letter = document.createElement("span");
+          letter.className = "tl";
+          letter.textContent = char;
+          letters.push({ letter, word, key });
+          word.append(letter);
+        }
+        fragment.append(word);
       }
-      child.replaceWith(frag);
+      child.replaceWith(fragment);
     }
-  };
+  }
+
   split(title);
-  // Fiecare cuvânt află pe ce rând a căzut, ca rândurile să apară pe rând.
-  const tops = [...new Set(words.map((w) => w.offsetTop))].sort((a, b) => a - b);
-  words.forEach((w) => w.style.setProperty("--line", tops.indexOf(w.offsetTop)));
-  title.style.setProperty("--lines", tops.length);
-  title.classList.add("is-steam");
+  if (!letters.length) return;
+  title.classList.add("is-typing");
+  const cursor = document.createElement("span");
+  cursor.className = "type-cursor";
+  letters[0].letter.before(cursor);
+  let timing = 490;
+  for (const { letter, word, key } of letters) {
+    const lastInWord = !letter.nextSibling;
+    setTimeout(() => {
+      letter.classList.add("is-on");
+      letter.after(cursor);
+      if (key && lastInWord) word.classList.add("is-gold");
+    }, timing);
+    timing += 82 + (lastInWord ? 105 : 0);
+  }
+  setTimeout(() => cursor.classList.add("is-done"), timing + 950);
 }
 
-setupSteamTitle();
+setupTypeTitle();
 setupNavigation();
 setupHours();
 setupMenu();

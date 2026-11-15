@@ -29,6 +29,7 @@ function setupWelcome() {
   if (!dialog || !config) return;
   const steps = Object.fromEntries([...dialog.querySelectorAll(".welcome-step")].map((el) => [el.dataset.step, el]));
   const live = !demo && Boolean(config.supabaseUrl && config.supabaseKey);
+  const voucherKey = config.voucherId || "voucher";
   let email = "";
   let demoCode = "";
 
@@ -45,14 +46,15 @@ function setupWelcome() {
 
   function showVoucher(voucher) {
     const qr = qrcode(0, "M");
-    qr.addData(`${codePrefix} VOUCHER ESPRESSO ${voucher.code} PANA LA ${voucher.until}`);
+    const label = config.voucherLabel || "Voucher espresso";
+    qr.addData(`${codePrefix} ${label.normalize("NFD").replace(/\p{M}/gu, "")} ${voucher.code}${demo ? "" : ` PANA LA ${voucher.until}`}`);
     qr.make();
     const ticket = steps.voucher;
     ticket.querySelector(".ticket-qr").innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
     ticket.querySelector(".ticket-code").textContent = `${codePrefix}-${voucher.code}`;
     ticket.querySelector(".ticket-until").textContent = demo ? "Cod de probă" : "Valabil până pe " + human(voucher.until);
     go("voucher");
-    pill.hidden = false;
+    if (pill) pill.hidden = false;
   }
 
   // Supabase trimite codul și îl verifică pe server; fără chei, pagina rulează în mod demonstrație.
@@ -116,7 +118,7 @@ function setupWelcome() {
         return fail("code", "Codul nu se potrivește. Verifică cele șase cifre afișate.");
       }
       const voucher = { code: code(), until: isoDay(day(30)) };
-      store.set("voucher", voucher);
+      if (!demo) store.set(voucherKey, voucher);
       showVoucher(voucher);
     } catch {
       fail("code", "Codul nu e bun sau a expirat. Cere altul.");
@@ -128,22 +130,33 @@ function setupWelcome() {
   dialog.querySelector(".welcome-back").addEventListener("click", () => go("email"));
   dialog.addEventListener("click", (event) => { if (event.target === dialog) dialog.close(); });
   dialog.addEventListener("close", () => {
-    if (!demo && !store.get("voucher")) store.set("voucher-amanat", Date.now());
+    if (!demo && !store.get(voucherKey)) store.set(`${voucherKey}-amanat`, Date.now());
   });
-  pill.addEventListener("click", open);
-  document.querySelector("[data-voucher]")?.addEventListener("click", open);
-  // Butonul apare doar după prima secțiune, ca să nu acopere butoanele de sus.
-  const togglePill = () => pill.classList.toggle("is-visible", scrollY > innerHeight * .7);
-  addEventListener("scroll", togglePill, { passive: true });
-  togglePill();
+  if (pill) {
+    pill.addEventListener("click", open);
+    const togglePill = () => pill.classList.toggle("is-visible", scrollY > innerHeight * .7);
+    addEventListener("scroll", togglePill, { passive: true });
+    togglePill();
+  }
 
-  const saved = store.get("voucher");
+  const saved = demo ? null : store.get(voucherKey);
   if (saved) {
     showVoucher(saved);
     return;
   }
-  // Fereastra apare singură la intrare; dacă a închis-o, nu mai insistăm o săptămână.
-  const later = store.get("voucher-amanat");
+  if (config.voucherAfterPage) {
+    const visitKey = `${namespace}-${voucherKey}-seen`;
+    try { if (sessionStorage.getItem(visitKey)) return; } catch { /* stocarea poate fi indisponibilă */ }
+    const openAfterScroll = () => {
+      if (scrollY < innerHeight || document.querySelector("dialog[open]")) return;
+      removeEventListener("scroll", openAfterScroll);
+      try { sessionStorage.setItem(visitKey, "1"); } catch { /* se afișează o singură dată pe pagină */ }
+      open();
+    };
+    addEventListener("scroll", openAfterScroll, { passive: true });
+    return;
+  }
+  const later = store.get(`${voucherKey}-amanat`);
   if (!demo && (!later || Date.now() - later > 7 * 864e5)) setTimeout(open, 1800);
 }
 

@@ -414,12 +414,6 @@
         "Croissant umplut": "#e0ac4f"
       }
     },
-    "voucher": {
-      "titlu": "Voucher pentru un espresso",
-      "text": "Încearcă voucherul cu adresa de test. Codul de verificare apare pe ecran.",
-      "conditii": "Exemplu de voucher pentru prezentare.",
-      "imagine": "cafeaCroissant"
-    },
     "roata": {
       "titlu": "Roata de cadouri",
       "text": "Testează roata cu premii de exemplu. Poți încerca de mai multe ori.",
@@ -450,6 +444,15 @@
         }
       ],
       "valabilitate": "Exemplu de premiu pentru prezentare."
+    },
+    "voucher": {
+      "id": "voucher-25",
+      "eticheta": "Voucher 25%",
+      "dupaPrimulEcran": true,
+      "titlu": "25% reducere la AIYR Coffee",
+      "text": "Înscrie-te cu adresa de e-mail și primești un voucher cu 25% reducere. În demonstrație folosim o adresă de test și afișăm codul direct aici.",
+      "conditii": "Voucher de probă pentru prezentare.",
+      "imagine": "cafeaCroissant"
     }
   },
   "locatii": [

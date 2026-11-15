@@ -7,7 +7,7 @@ Site-ul AIYR Coffee Dorohoi, adaptat din șablonul de cafenea. [Deschide site-ul
 - Pune fotografiile cafenelei în `assets/img/aiyr/`, actualizează intrările din `imagini` și rulează `python sursa/optimizeaza_imagini.py`. Înlocuiește sigla provizorie din `favicon.png`. Actualizează `fotografiiIlustrative` și `surseFoto` după înlocuirea imaginii.
 - Adaugă meniul și prețurile în `meniu`, programul și telefonul în `locatii`, iar profilele și adresele de contact în `linkuri`. Secțiunile de poveste, galerie și recenzii apar când primesc conținut.
 - Meniul folosește denumirile și prețurile din fotografia trimisă. Pentru o variantă de probă, `meniuExemplu: true` afișează avertismentul de meniu demonstrativ.
-- Roata și voucherul au modul demo activat în `extra.demo`. Premiile și codurile sunt de probă. Voucherul folosește o adresă prestabilită și afișează codul direct pe pagină.
+- Roata și voucherul de 25% au modul demo activat în `extra.demo`. Fereastra voucherului apare după primul ecran derulat, o singură dată pe filă, cu o adresă de test și cod afișat pe pagină.
 - Deschide `print/card-masa.html` pentru cartonașele cu QR către pagina de meniu.
 - După stabilirea adresei publice, completează `publicUrl` înainte să generezi cartonașul pentru mese cu `python sursa/qr.py` și apoi `python sursa/genereaza.py`.
 

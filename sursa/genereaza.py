@@ -118,10 +118,8 @@ def image(key, *, hero=False, sizes="(min-width: 900px) 45vw, 100vw"):
 
 
 def gallery_frame(key, index):
-    caption = esc(DATA["imagini"][key]["titlu"])
     return (f'<figure class="gallery-frame" id="galerie-cadru-{index}">'
-            f'<div class="gallery-photo">{image(key, sizes="(min-width: 900px) 64vw, 92vw")}</div>'
-            f'<figcaption>{caption}</figcaption></figure>')
+            f'<div class="gallery-photo">{image(key, sizes="(min-width: 900px) 64vw, 92vw")}</div></figure>')
 
 
 def gallery_button(key, index):

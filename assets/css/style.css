@@ -177,7 +177,15 @@ main [id], footer[id] { scroll-margin-top: calc(var(--header-height) + 20px); }
 .gallery-photo { aspect-ratio: 4 / 3; overflow: hidden; border-radius: 4px; background: var(--menu-surface); }
 .gallery-photo picture, .gallery-photo img { width: 100%; height: 100%; display: block; }
 .gallery-photo img { object-fit: cover; object-position: 50% 56%; }
-.gallery-frame figcaption { margin-top: 11px; color: var(--muted); font-size: .86rem; }
+.gallery.is-carousel .gallery-frames {
+  position: relative; display: block; height: clamp(250px, 52vw, 510px); overflow: hidden;
+  touch-action: pan-y; cursor: grab; user-select: none; isolation: isolate;
+}
+.gallery.is-carousel .gallery-frames.is-dragging { cursor: grabbing; }
+.gallery.is-carousel .gallery-frames:focus-visible { outline-offset: -3px; }
+.gallery.is-carousel .gallery-frame { position: absolute; left: 50%; top: 50%; width: min(72%, 700px); height: 94%; }
+.gallery.is-carousel .gallery-photo { height: 100%; aspect-ratio: auto; }
+.gallery.is-carousel .gallery-photo img { pointer-events: none; -webkit-user-drag: none; }
 .gallery-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .gallery-controls button {
   display: grid; gap: 8px; align-content: start; min-width: 0;
@@ -418,11 +426,17 @@ body {
 
 /* Titlul de sus: mai mic, apare rând cu rând, încet; la final cuvintele-cheie se încălzesc în auriu. */
 .hero h1 { font-size: clamp(2.6rem, 6vw, 5.8rem); line-height: .95; }
-.hero h1.is-steam { animation: none; }
-.hero h1 .sw { display: inline-block; white-space: nowrap; opacity: 0; animation: line-in 1.4s cubic-bezier(.22, .61, .36, 1) forwards; animation-delay: calc(.3s + var(--line, 0) * .8s); }
-.hero h1 .sw.is-key { animation: line-in 1.4s cubic-bezier(.22, .61, .36, 1) forwards, gold-on 1.6s ease forwards; animation-delay: calc(.3s + var(--line, 0) * .8s), calc(.9s + var(--lines, 1) * .8s); }
-@keyframes line-in { from { opacity: 0; transform: translateY(14px); filter: blur(6px); } to { opacity: 1; transform: none; filter: blur(0); } }
-@keyframes gold-on { to { color: #e6bd7d; } }
+.hero h1.is-typing { animation: none; }
+.hero h1 .sw { display: inline-block; white-space: nowrap; transition: color .28s var(--ease-out); }
+.hero h1 .sw.is-gold { color: #e6bd7d; }
+.hero h1 .tl { opacity: 0; }
+.hero h1 .tl.is-on { opacity: 1; }
+.type-cursor {
+  display: inline-block; width: .045em; height: .76em; margin-inline: .035em -.08em;
+  vertical-align: -.035em; background: #e6bd7d; animation: title-caret .9s steps(1) infinite;
+}
+.type-cursor.is-done { visibility: hidden; animation: none; }
+@keyframes title-caret { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
 /* Coperta și vizita AIYR */
 .hero-main {
@@ -482,7 +496,8 @@ body {
 .mobile-actions:has(a[hidden]) { grid-template-columns: 1fr; }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero h1 .sw { opacity: 1; animation: none; }
+  .hero h1 .tl { opacity: 1; }
+  .type-cursor { visibility: hidden; }
 }
 @media (max-width: 640px) {
   .hero-photo img { object-position: right 69%; }
