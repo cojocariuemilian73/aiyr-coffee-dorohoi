@@ -136,10 +136,6 @@ def small_src(key):
 
 def product_detail(product, badge=""):
     description = esc(product.get("descriere", ""))
-    photo = DATA["imagini"].get(product.get("imagine"), {})
-    if photo.get("ilustrativa"):
-        description += " · " if description else ""
-        description += '<span class="product-photo-note">Foto ilustrativă</span>'
     return f"<p>{description}{badge}</p>" if description or badge else ""
 
 

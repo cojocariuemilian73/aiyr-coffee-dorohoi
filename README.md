@@ -13,4 +13,4 @@ Site-ul AIYR Coffee Dorohoi, adaptat din șablonul de cafenea. [Deschide site-ul
 
 Adresa publică găsită este Strada Războieni 1, Dorohoi. [Intrarea din directorul Am Găsit](https://am-gasit.ro/aiyr-coffee-strada-razboieni-1-715200-dorohoi/).
 
-Fotografiile fațadei și interiorului, fotografia cu cafeaua și croissantul și selecția de recenzii provin din fișa cafenelei. Fotografiile ilustrative din meniu sunt marcate lângă produse, cu sursele în subsol. [Google Maps](https://www.google.com/maps/place/AIYR+Coffee/data=!4m7!3m6!1s0x47346100715c225f:0xb4c6591201c3e40e!8m2!3d47.9545741!4d26.3971855!16s%2Fg%2F11y_xgzvdb!19sChIJXyJccQBhNEcRDuTDARJZxrQ).
+Fotografiile fațadei și interiorului, fotografia cu cafeaua și croissantul și selecția de recenzii provin din fișa cafenelei. Imaginile ilustrative sunt identificate în descrierile alternative ale fotografiilor. Sursele sunt în subsol. [Google Maps](https://www.google.com/maps/place/AIYR+Coffee/data=!4m7!3m6!1s0x47346100715c225f:0xb4c6591201c3e40e!8m2!3d47.9545741!4d26.3971855!16s%2Fg%2F11y_xgzvdb!19sChIJXyJccQBhNEcRDuTDARJZxrQ).

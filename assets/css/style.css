@@ -507,7 +507,6 @@ body {
 .location-map iframe { min-height: 260px; height: 100%; }
 .menu-section .section-intro:last-child { margin-bottom: 0; }
 .menu-notes { margin-top: 24px; font-size: .88rem; color: var(--muted); }
-.product-photo-note { font-size: .78rem; font-style: italic; }
 .footer-brand p:empty, .footer-grid address + p:empty { display: none; }
 
 @media (prefers-reduced-motion: reduce) {

@@ -29,14 +29,13 @@ def build(data, esc, image):
         tint = spec.get("tente", {}).get(name, "#c08a5e")
         story = spec.get("povesti", {}).get(name, {})
         kicker = f'<span class="special-kicker">{esc(story["eticheta"])}</span>' if story.get("eticheta") else ""
-        photo_note = '<span class="product-photo-note">Foto ilustrativă</span>' if data["imagini"].get(key, {}).get("ilustrativa") else ""
         detail = story.get("text") or product.get("descriere")
         detail_html = f'<p class="special-description">{esc(detail)}</p>' if detail else ""
         cards.append(
             f'<li class="special" style="--tint-own:{esc(tint)}">'
             f'<div class="special-visual">{photo}</div>'
             f'<div class="special-copy">{kicker}<h3>{esc(product["nume"])}</h3>'
-            f'{detail_html}<span class="price">{price(product)}</span>{photo_note}</div></li>'
+            f'{detail_html}<span class="price">{price(product)}</span></div></li>'
         )
     specials = (
         '<section class="specials" id="specialitati" aria-labelledby="specials-title">'
