@@ -18,23 +18,175 @@
     "youtube": "",
     "credit": ""
   },
-  "meniuExemplu": false,
-  "meniu": [],
+  "meniuExemplu": true,
+  "meniu": [
+    {
+      "id": "cafea",
+      "nume": "Cafea",
+      "produse": [
+        {
+          "nume": "Espresso",
+          "pret": 9,
+          "descriere": "O doză de espresso.",
+          "etichete": []
+        },
+        {
+          "nume": "Espresso dublu",
+          "pret": 13,
+          "descriere": "Două doze de espresso.",
+          "etichete": []
+        },
+        {
+          "nume": "Americano",
+          "pret": 11,
+          "descriere": "Espresso lungit cu apă fierbinte.",
+          "etichete": []
+        },
+        {
+          "nume": "Cappuccino",
+          "pret": 14,
+          "descriere": "Espresso și lapte cu spumă fină.",
+          "etichete": []
+        },
+        {
+          "nume": "Flat white",
+          "pret": 16,
+          "descriere": "Espresso dublu și lapte.",
+          "etichete": []
+        },
+        {
+          "nume": "Caffè latte",
+          "pret": 16,
+          "descriere": "Espresso cu lapte și puțină spumă.",
+          "etichete": []
+        }
+      ]
+    },
+    {
+      "id": "reci",
+      "nume": "Băuturi reci",
+      "produse": [
+        {
+          "nume": "Iced latte",
+          "pret": 17,
+          "descriere": "Espresso, lapte și gheață.",
+          "etichete": [
+            "rece"
+          ]
+        },
+        {
+          "nume": "Espresso tonic",
+          "pret": 18,
+          "descriere": "Espresso cu apă tonică și gheață.",
+          "etichete": [
+            "rece"
+          ]
+        },
+        {
+          "nume": "Limonadă cu mentă",
+          "pret": 16,
+          "descriere": "Lămâie, mentă și gheață.",
+          "etichete": [
+            "rece",
+            "fara-cafeina"
+          ]
+        },
+        {
+          "nume": "Limonadă cu zmeură",
+          "pret": 18,
+          "descriere": "Lămâie și piure de zmeură.",
+          "etichete": [
+            "rece",
+            "fara-cafeina"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ceai",
+      "nume": "Ceai și ciocolată",
+      "produse": [
+        {
+          "nume": "Ceai de mentă",
+          "pret": 12,
+          "descriere": "Infuzie de mentă.",
+          "etichete": [
+            "fara-cafeina"
+          ]
+        },
+        {
+          "nume": "Ceai de fructe",
+          "pret": 12,
+          "descriere": "Infuzie de fructe de pădure.",
+          "etichete": [
+            "fara-cafeina"
+          ]
+        },
+        {
+          "nume": "Ciocolată caldă",
+          "pret": 16,
+          "descriere": "Cacao și lapte.",
+          "etichete": [
+            "dulce"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "patiserie",
+      "nume": "Patiserie",
+      "produse": [
+        {
+          "nume": "Croissant cu unt",
+          "pret": 10,
+          "descriere": "Croissant simplu cu unt.",
+          "etichete": [
+            "fara-cafeina"
+          ]
+        },
+        {
+          "nume": "Croissant cu vanilie",
+          "pret": 15,
+          "descriere": "Croissant umplut cu cremă de vanilie.",
+          "etichete": [
+            "dulce",
+            "fara-cafeina"
+          ]
+        },
+        {
+          "nume": "Brownie",
+          "pret": 14,
+          "descriere": "Prăjitură densă cu ciocolată.",
+          "etichete": [
+            "dulce"
+          ]
+        }
+      ]
+    }
+  ],
   "evaluareGoogle": null,
   "recenzii": [],
-  "fotografiiIlustrative": true,
+  "fotografiiIlustrative": false,
   "surseFoto": [
     {
-      "nume": "Nathan Dumlao / Unsplash",
-      "url": "https://unsplash.com/photos/zUNs99PGDg0"
+      "nume": "Simon Darius Gafincu / Google Maps",
+      "url": "https://www.google.com/maps/place/AIYR+Coffee/data=!4m7!3m6!1s0x47346100715c225f:0xb4c6591201c3e40e!8m2!3d47.9545741!4d26.3971855!16s%2Fg%2F11y_xgzvdb!19sChIJXyJccQBhNEcRDuTDARJZxrQ"
+    },
+    {
+      "nume": "Anca Spetco / Google Maps",
+      "url": "https://www.google.com/maps/place/AIYR+Coffee/data=!4m7!3m6!1s0x47346100715c225f:0xb4c6591201c3e40e!8m2!3d47.9545741!4d26.3971855!16s%2Fg%2F11y_xgzvdb!19sChIJXyJccQBhNEcRDuTDARJZxrQ"
+    },
+    {
+      "nume": "Patricia Miron / Google Maps",
+      "url": "https://www.google.com/maps/place/AIYR+Coffee/data=!4m7!3m6!1s0x47346100715c225f:0xb4c6591201c3e40e!8m2!3d47.9545741!4d26.3971855!16s%2Fg%2F11y_xgzvdb!19sChIJXyJccQBhNEcRDuTDARJZxrQ"
     }
   ],
   "imagini": {
     "hero": {
       "fisier": "coperta.webp",
-      "latime": 1440,
-      "inaltime": 1800,
-      "alt": "Cești de cafea cu lapte, pe o masă de lemn.",
+      "latime": 1600,
+      "inaltime": 1033,
+      "alt": "Fațada AIYR Coffee din Dorohoi, cu terasa și firma luminoasă.",
       "mobil": "coperta-mobil.webp",
       "latimeMobil": 800,
       "inaltimeMobil": 1080
@@ -43,7 +195,21 @@
       "fisier": "distribuire.webp",
       "latime": 1200,
       "inaltime": 630,
-      "alt": "Cești de cafea cu lapte."
+      "alt": "Intrarea și terasa cafenelei AIYR Coffee."
+    },
+    "interior": {
+      "fisier": "interior.webp",
+      "latime": 1000,
+      "inaltime": 1333,
+      "alt": "Două cești pe o masă, cu barul cafenelei în fundal.",
+      "titlu": "Interiorul cafenelei"
+    },
+    "cafeaCroissant": {
+      "fisier": "cafea-croissant.webp",
+      "latime": 1000,
+      "inaltime": 1333,
+      "alt": "Cafea cu desen în spumă și un croissant pe o masă la soare.",
+      "titlu": "Cafea și croissant"
     }
   },
   "extra": {
@@ -57,7 +223,9 @@
       "reper": "",
       "cautareHarta": "AIYR Coffee, Strada Războieni 1, Dorohoi",
       "telefon": "",
-      "program": []
+      "program": [],
+      "latitudine": 47.9545741,
+      "longitudine": 26.3971855
     }
   ],
   "texte": {
@@ -70,8 +238,11 @@
     "heroSubtitlu": "Cafenea în Dorohoi · Strada Războieni 1",
     "poveste": {},
     "galerie": {
-      "imagini": [],
-      "titlu": "",
+      "imagini": [
+        "interior",
+        "cafeaCroissant"
+      ],
+      "titlu": "Galerie",
       "text": ""
     },
     "meniu": "Meniu",

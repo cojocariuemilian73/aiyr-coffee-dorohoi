@@ -195,9 +195,14 @@ def small_src(key):
 
 
 def menu_board():
+    products = [product for category in DATA["meniu"] for product in category["produse"]]
+    tags = {tag for product in products for tag in product.get("etichete", [])}
+    if any(product.get("preferat") for product in products):
+        tags.add("preferat")
     filters = "".join(
         f'<button type="button" class="board-filter" data-filter="{key}" aria-pressed="{"true" if key == "toate" else "false"}">{label}</button>'
         for key, label in FILTERS
+        if key == "toate" or key in tags
     )
     groups = []
     n = 0
@@ -333,6 +338,9 @@ site_url = DATA["publicUrl"].rstrip("/") + "/" if DATA["publicUrl"] else ""
 story = TEXT["poveste"]
 gallery = TEXT["galerie"]["imagini"]
 menu_available = any(category["produse"] for category in DATA["meniu"])
+demo_menu = menu_available and DATA.get("meniuExemplu", False)
+demo_notice = '<p class="menu-demo-notice"><strong>Meniu demonstrativ</strong> · Produsele și prețurile sunt exemple pentru prezentare.</p>' if demo_menu else ""
+empty_notice = f'<p>{esc(TEXT["meniuInPregatire"])}</p>' if not menu_available else ""
 map_search = maps("search", dorohoi["cautareHarta"])
 map_query = quote(dorohoi["cautareHarta"])
 map_url = links["harta"] or f"https://www.google.com/maps?q={map_query}&z=17&output=embed"
@@ -343,7 +351,7 @@ schema = {"@context": "https://schema.org", "@graph": shops}
 if site_url:
     for shop in shops:
         shop["url"] = site_url
-        if menu_available:
+        if menu_available and not demo_menu:
             shop["hasMenu"] = site_url + "meniu.html"
         if not illustrative:
             shop["image"] = urljoin(site_url, IMG + share["fisier"])
@@ -352,9 +360,14 @@ if profiles:
     main_shop["sameAs"] = profiles
 
 nav = [("locatii", "Locație"), ("meniu", "Meniu")]
+if gallery:
+    nav.append(("atelier", "Galerie"))
 if story:
     nav.append(("poveste", "Poveste"))
 values = {
+    "demoRobots": '<meta name="robots" content="noindex">' if demo_menu else "",
+    "demoHero": '<p class="hero-demo-label">Site demonstrativ</p>' if demo_menu else "",
+    "demoMenuLink": f'<a class="button button-ghost" href="#meniu">Vezi meniul demo {arrow("M12 4v15m-6-6 6 6 6-6")}</a>' if demo_menu else "",
     "favicon": esc(IMG + "favicon.png"),
     "title": esc(TEXT["titluPagina"]),
     "logo": logo(),
@@ -416,10 +429,10 @@ values = {
     "contactHidden": "" if dorohoi["telefon"] or contact_links(links) else " hidden",
     "scheduleLabelD": esc(schedule_label(dorohoi["program"])),
     "scheduleLabelB": esc(schedule_label(botosani["program"])),
-    "heroIllustration": '<p class="hero-credit">Imagine ilustrativă</p>' if illustrative else "",
+    "heroIllustration": '\n        <p class="hero-credit">Imagine ilustrativă</p>' if illustrative else "",
     "arrowDown": arrow("M12 4v15m-6-6 6 6 6-6"),
     "arrowOut": arrow("M6 18 18 6M7 6h11v11"),
-    "menuNotice": f'<p>{esc(TEXT["meniuInPregatire"])}</p>' if not menu_available else "",
+    "menuNotice": demo_notice or empty_notice,
     "categoriesHidden": "" if menu_available else " hidden",
     "reviews": "".join(review(item, i, len([r for r in DATA["recenzii"] if r])) for i, item in enumerate([r for r in DATA["recenzii"] if r], start=1)),
     "writeReview": esc(links.get("scrieRecenzie") or links["recenzii"] or map_search),
@@ -453,7 +466,7 @@ values = {
     "menuPanels": "".join(menu_panel(row) for row in DATA["meniu"]),
     "menuBoard": menu_board() if menu_available else "",
     "socialLink": f'<a class="text-link" href="{esc(social)}">Urmărește-ne pe {social_label} {arrow("M6 18 18 6M7 6h11v11")}</a>' if social else "",
-    "photoCredits": '<p class="photo-credits">Fotografie de ' + " · ".join(
+    "photoCredits": '<p class="photo-credits">Fotografii de ' + " · ".join(
         f'<a href="{esc(source["url"])}">{esc(source["nume"])}</a>' for source in DATA["surseFoto"]
     ) + '</p>' if DATA["surseFoto"] else "",
     "year": date.today().year,
@@ -527,6 +540,8 @@ def qr_item(product):
 
 menu_values = dict(values)
 menu_values.update({
+    "menuDemoNotice": demo_notice,
+    "menuEmptyNotice": empty_notice,
     "menuAddress": esc(f'{dorohoi["adresa"]}, {dorohoi["oras"]}') + (f' · {values["scheduleLabelD"]}' if dorohoi["program"] else ""),
     "vMenuCss": hashlib.sha1((ROOT / "assets/css/meniu.css").read_bytes()).hexdigest()[:8],
     "cover": image(TEXT["paginaMeniu"].get("imagine", "hero"), hero=True, sizes="100vw"),
