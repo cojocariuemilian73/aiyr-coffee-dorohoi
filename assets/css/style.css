@@ -199,8 +199,6 @@ main [id], footer[id] { scroll-margin-top: calc(var(--header-height) + 20px); }
   .gallery-track.is-dragging { cursor: grabbing; }
 }
 .gallery-controls { display: flex; align-items: center; gap: clamp(10px, 2vw, 24px); margin-top: 14px; }
-.gallery-hint { color: var(--muted); font-size: .8rem; }
-.gallery-hint span { display: none; }
 .gallery-progress { flex: 0 1 112px; height: 2px; margin-inline-start: auto; overflow: hidden; background: var(--line); }
 .gallery-progress span {
   display: block; width: calc(100% / var(--gallery-count)); height: 100%; background: var(--oak);
@@ -214,7 +212,6 @@ main [id], footer[id] { scroll-margin-top: calc(var(--header-height) + 20px); }
 }
 :is(.gallery-arrows, .reviews-nav) button[aria-disabled="true"] { opacity: .45; cursor: default; }
 @media (hover: hover) and (pointer: fine) {
-  .gallery-hint span { display: inline; }
   :is(.gallery-arrows, .reviews-nav) button:not([aria-disabled="true"]):hover { background: var(--oak); border-color: var(--oak); color: var(--paper); }
 }
 @media (prefers-reduced-motion: no-preference) {
