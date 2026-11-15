@@ -153,7 +153,6 @@ function setupWheel() {
   const disc = document.querySelector(".wheel-disc");
   const pointer = document.querySelector(".wheel-pointer");
   const result = document.querySelector(".wheel-result");
-  const hint = document.querySelector(".wheel-hint");
   if (!wrap || !disc || !config) return;
   const count = config.prizes.length * 2;
   const slice = 360 / count;
@@ -200,7 +199,6 @@ function setupWheel() {
     wrap.disabled = true;
     button.disabled = true;
     button.textContent = "Revino mâine";
-    if (hint) hint.hidden = true;
   }
 
   // Boabe de cafea care sar din centru la câștig.
@@ -339,77 +337,29 @@ function setupWheel() {
   button.addEventListener("click", spin);
 }
 
-// Specialitățile: produsele trec prin centru legate de derulare. Pe calculator vin de jos în sus,
-// pe telefon din dreapta spre stânga. Lumina din fundal ia culoarea produsului din centru.
+// Fotografiile se deschid pe rând, fără să schimbe poziția produselor.
 function setupSpecials() {
-  const section = document.querySelector(".specials");
-  if (!section || calm) return;
-  const track = section.querySelector(".specials-track");
-  const sticky = section.querySelector(".specials-sticky");
-  const items = [...section.querySelectorAll(".special")];
-  const dots = [...section.querySelectorAll(".specials-dots span")];
-  if (items.length < 2) return;
-  section.classList.add("is-scrolly");
-  const last = items.length - 1;
-  const parts = items.map((item) => ({
-    item,
-    visual: item.querySelector(".special-visual"),
-    photo: item.querySelector(".special-photo"),
-    copy: item.querySelector(".special-copy"),
-    floaters: [...item.querySelectorAll(".floater")],
-    tint: hex(item.dataset.tint)
-  }));
-  const settle = (t) => {
-    const x = Math.min(1, Math.max(0, (t - .25) / .5));
-    return x * x * (3 - 2 * x);
-  };
-  function hex(value) {
-    const n = parseInt((value || "#c08a5e").slice(1), 16);
-    return [n >> 16, (n >> 8) & 255, n & 255];
-  }
-  let queued = false;
+  const cards = [...document.querySelectorAll(".special")];
+  if (!cards.length || calm) return;
 
-  function draw() {
-    queued = false;
-    const wide = innerWidth >= 900;
-    const box = track.getBoundingClientRect();
-    const progress = Math.min(1, Math.max(0, -box.top / (box.height - innerHeight)));
-    const raw = progress * last;
-    const base = Math.min(last - 1, Math.floor(raw));
-    const focus = base + settle(raw - base);
-    const size = parts[0].photo.offsetWidth || 300;
-    parts.forEach(({ item, visual, photo, copy, floaters }, i) => {
-      const d = i - focus;
-      const far = Math.min(Math.abs(d), 1.6);
-      const move = wide
-        ? `translateY(${d * size * .78}px) scale(${1 - far * .30})`
-        : `translateX(${d * Math.min(innerWidth * .64, 380)}px) translateY(${far * 24}px) scale(${1 - far * .35})`;
-      visual.style.transform = move;
-      visual.style.opacity = String(Math.max(0, 1 - far * (wide ? .85 : .55)));
-      visual.style.filter = far > .05 ? `blur(${(far * 3.2).toFixed(1)}px)` : "none";
-      item.style.zIndex = String(10 - Math.round(far * 4));
-      photo.style.rotate = `${d * -16}deg`;
-      floaters.forEach((el) => {
-        const depth = Number(el.style.getPropertyValue("--z")) || 1;
-        el.style.translate = `0 ${d * depth * -60}px`;
-        el.style.opacity = String(Math.max(0, 1 - Math.abs(d) * 2.2));
-      });
-      copy.style.opacity = String(Math.max(0, 1 - Math.abs(d) * 2.4));
-      copy.style.transform = wide ? `translateY(${d * -40}px)` : `translateX(${d * Math.min(innerWidth * .62, 380)}px)`;
-      copy.style.pointerEvents = Math.abs(d) < .5 ? "auto" : "none";
-    });
-    // Culoarea luminii: amestec între produsele vecine.
-    const lo = Math.floor(focus), hi = Math.min(last, lo + 1), t = focus - lo;
-    const mix = parts[lo].tint.map((c, k) => Math.round(c + (parts[hi].tint[k] - c) * t));
-    section.style.setProperty("--tint", `rgb(${mix.join(" ")})`);
-    sticky.style.setProperty("--glow-x", wide ? "30%" : "50%");
-    const active = Math.round(focus);
-    dots.forEach((dot, i) => dot.classList.toggle("is-on", i === active));
-  }
-  const request = () => { if (!queued) { queued = true; requestAnimationFrame(draw); } };
-  addEventListener("scroll", request, { passive: true });
-  addEventListener("resize", request);
-  draw();
+  const narrow = matchMedia("(max-width: 899px)");
+  const timing = { easing: "cubic-bezier(.23, 1, .32, 1)", fill: "backwards" };
+  const observer = new IntersectionObserver((entries) => {
+    for (const { target, isIntersecting } of entries) {
+      if (!isIntersecting) continue;
+      const delay = narrow.matches ? 0 : cards.indexOf(target) * 110;
+      target.querySelector(".special-photo").animate([
+        { clipPath: "circle(28% at 50% 53%)", opacity: .45, transform: "translateY(16px) rotate(-5deg)" },
+        { clipPath: "circle(72% at 50% 50%)", opacity: 1, transform: "none" }
+      ], { ...timing, delay, duration: 680 });
+      target.querySelector(".special-copy").animate([
+        { opacity: .45, transform: "translateY(12px)" },
+        { opacity: 1, transform: "none" }
+      ], { ...timing, delay: delay + 90, duration: 530 });
+      observer.unobserve(target);
+    }
+  }, { rootMargin: "0px 0px 8% 0px" });
+  cards.forEach((card) => observer.observe(card));
 }
 
 setupWelcome();

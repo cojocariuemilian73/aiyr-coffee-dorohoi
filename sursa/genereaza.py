@@ -358,7 +358,6 @@ if DATA["extra"]["activ"]:
 nav.append(("locatii", "Locație"))
 values = {
     "demoRobots": '<meta name="robots" content="noindex">' if demo_site else "",
-    "demoHero": '<p class="hero-demo-label">Site demonstrativ</p>' if demo_site else "",
     "menuLink": f'<a class="button button-ghost" href="#meniu">{menu_label} {arrow("M12 4v15m-6-6 6 6 6-6")}</a>' if menu_available else "",
     "menuNotes": f'<p class="menu-notes">{esc(TEXT["meniuNota"])}</p>' if menu_available and TEXT.get("meniuNota") else "",
     "favicon": esc(IMG + "favicon.png"),

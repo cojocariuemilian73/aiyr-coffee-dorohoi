@@ -449,14 +449,6 @@ body {
   font-size: clamp(.98rem, 1.4vw, 1.16rem);
   color: var(--cream);
 }
-.hero-demo-label {
-  margin-bottom: 18px;
-  color: var(--cream);
-  font-size: .82rem;
-  font-weight: 600;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
 .menu-demo-notice { padding-left: 14px; border-left: 2px solid var(--oak); }
 .menu-demo-notice strong { color: var(--cream); }
 .hero-actions { margin-top: 26px; }
@@ -484,8 +476,6 @@ body {
 .location-map iframe { min-height: 260px; height: 100%; }
 .menu-section { border-block: 1px solid var(--line); }
 .menu-section .section-intro:last-child { margin-bottom: 0; }
-.menu-section .section-intro:has(+ .menu-page-link[hidden]) { margin-bottom: 0; }
-.menu-page-link { margin-top: 24px; }
 .menu-notes { margin-top: 24px; font-size: .88rem; color: var(--muted); }
 .product-photo-note { font-size: .78rem; font-style: italic; }
 .footer-brand p:empty, .footer-grid address + p:empty { display: none; }

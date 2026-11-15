@@ -15,30 +15,17 @@ def build(data, esc, image):
         value = product["pret"]
         return (f"{value:g}".replace(".", ",") + " lei") if value is not None else "La cerere"
 
-    # --- Specialitățile casei: carusel legat de derulare, cu ingrediente care plutesc ---
     spec = extra["specialitati"]
-    shapes = {
-        "bob": '<svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#5a3520"/><path d="M10 2c-4 6 4 18 0 24" stroke="#2a160c" stroke-width="2" fill="none"/></svg>',
-        "frunza": '<svg viewBox="0 0 30 20"><path d="M1 10C8-1 24-1 29 10 24 21 8 21 1 10Z" fill="#6f9e5a"/><path d="M3 10h24" stroke="#4d7a3c" stroke-width="1.4"/></svg>',
-        "lime": '<svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="14" fill="#9cc45a"/><circle cx="15" cy="15" r="11" fill="#d5ea9a"/><path d="M15 4v22M4 15h22M7 7l16 16M23 7 7 23" stroke="#9cc45a" stroke-width="1.2"/></svg>',
-        "firimitura": '<svg viewBox="0 0 20 16"><path d="M2 8 6 2l8 1 5 6-4 6-9 0Z" fill="#d9a860"/><path d="M6 6l6 1" stroke="#b07f3e" stroke-width="1"/></svg>',
-    }
-    # Unde stau ingredientele în jurul pozei: unghi, distanță (din rază), mărime, adâncime.
-    spots = [(-55, 1.14, 52, 1.4), (-5, 1.2, 34, .7), (40, 1.12, 46, 1.2), (145, 1.16, 40, .9), (200, 1.1, 56, 1.5), (250, 1.22, 32, .6)]
     cards = []
-    for i, name in enumerate(spec["produse"]):
+    for name in spec["produse"]:
         product = products.get(name)
         if not product:
             continue
         key = product.get("imagine")
         if key in data["imagini"]:
-            photo = f'<div class="special-photo">{image(key, sizes="(min-width: 900px) 46vw, 80vw")}</div>'
+            photo = f'<div class="special-photo">{image(key, sizes="(min-width: 900px) 30vw, 80vw")}</div>'
         else:
             photo = f'<div class="special-photo is-type" aria-hidden="true"><span>{esc(product["nume"])}</span></div>'
-        floaters = "".join(
-            f'<span class="floater" style="--a:{a}deg;--r:{r};--s:{size}px;--z:{z};--k:{k}">{shapes[kind]}</span>'
-            for k, (kind, (a, r, size, z)) in enumerate(zip(spec.get("ingrediente", {}).get(name, []), spots))
-        )
         tint = spec.get("tente", {}).get(name, "#c08a5e")
         story = spec.get("povesti", {}).get(name, {})
         kicker = f'<span class="special-kicker">{esc(story["eticheta"])}</span>' if story.get("eticheta") else ""
@@ -46,26 +33,17 @@ def build(data, esc, image):
         detail = story.get("text") or product.get("descriere")
         detail_html = f'<p>{esc(detail)}</p>' if detail else ""
         cards.append(
-            f'<li class="special" style="--i:{i};--tint-own:{esc(tint)}" data-tint="{esc(tint)}">'
-            f'<div class="special-visual">{photo}'
-            f'<div class="floaters" aria-hidden="true">{floaters}</div></div>'
+            f'<li class="special" style="--tint-own:{esc(tint)}">'
+            f'<div class="special-visual">{photo}</div>'
             f'<div class="special-copy">{kicker}<h3>{esc(product["nume"])}</h3>'
             f'{detail_html}<span class="price">{price(product)}</span>{photo_note}</div></li>'
         )
-    steam = (
-        '<svg class="steam" viewBox="0 0 120 160" aria-hidden="true">'
-        '<path d="M40 150c-14-20 14-34 0-56s12-36 0-60"/><path d="M62 150c-14-22 16-36 0-60s12-34 2-62"/>'
-        '<path d="M84 150c-12-18 12-32 0-52s10-30 0-52"/></svg>'
-    )
-    dots = "".join(f'<span style="--i:{i}"></span>' for i in range(len(cards)))
     specials = (
         '<section class="specials" id="specialitati" aria-labelledby="specials-title">'
-        f'<div class="specials-track" style="--count:{len(cards)}"><div class="specials-sticky"><div class="shell specials-inner">'
+        '<div class="shell specials-inner">'
         f'<div class="specials-head"><h2 id="specials-title">{esc(spec["titlu"])}</h2><p>{esc(spec["text"])}</p></div>'
-        f'<div class="specials-stage">{steam}<ul class="special-list">{"".join(cards)}</ul></div>'
-        f'<div class="specials-dots" aria-hidden="true">{dots}</div>'
-        '</div></div></div></section>'
-    )
+        f'<ul class="special-list">{"".join(cards)}</ul></div></section>'
+    ) if cards else ""
 
     # --- Roata: 12 felii (fiecare premiu de două ori, față în față), becuri, cuie, ac și butuc ---
     wheel = extra["roata"]
@@ -124,7 +102,6 @@ def build(data, esc, image):
         f'<article class="offer offer-wheel"><h3 id="offers-title">{esc(wheel["titlu"])}</h3><p>{esc(wheel["text"])}</p>'
         f'<button type="button" class="wheel-wrap" aria-label="Învârte roata">{wheel_svg}</button>'
         '<button type="button" class="button button-dark" data-spin>Învârte roata</button>'
-        '<p class="wheel-hint">Sau apasă direct pe roată.</p>'
         f'<p class="wheel-result" role="status"></p>{voucher_button}</article>'
         '</div></div>'
         f'<script id="extra-config" type="application/json">{config_json}</script>'
