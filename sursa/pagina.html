@@ -82,11 +82,9 @@
           <p class="lead">{{storyLead}}</p>
           <p>{{storyText}}</p>
         </div>
-        <div class="story-images">
-          {{storyYear}}
+        <div class="story-images">{{storyYear}}
           {{storyLarge}}
-          {{storySmall}}
-          {{storyThird}}
+          {{storySmall}}{{storyThird}}
         </div>
       </div>
     </section>
@@ -129,7 +127,7 @@
           <h2 id="reviews-title">{{reviewsTitle}}</h2>
           <div class="reviews-side">
             {{reviewsRating}}
-            <a class="button button-dark" href="{{writeReview}}">Lasă și tu o recenzie {{arrowOut}}</a>
+            <a class="button button-dark" href="{{reviewsUrl}}">Vezi pe Google Maps {{arrowOut}}</a>
             <div class="reviews-nav" hidden>
               <button type="button" class="reviews-prev" aria-label="Recenzia anterioară" aria-controls="reviews-track">{{arrowLeft}}</button>
               <button type="button" class="reviews-next" aria-label="Recenzia următoare" aria-controls="reviews-track">{{arrowRight}}</button>

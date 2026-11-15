@@ -1,12 +1,14 @@
-// Voucherul pe e-mail, roata norocului și cardul de fidelitate.
-// Codul pe e-mail trece prin Supabase; roata și ștampilele se țin pe telefon (localStorage), deci sunt pentru demonstrație.
+// Voucherul, roata de cadouri și caruselul de specialități.
 import qrcode from "qrcode-generator";
 
 const config = JSON.parse(document.getElementById("extra-config")?.textContent || "null");
+const demo = Boolean(config?.demo);
 const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const namespace = `${config?.prefix?.toLowerCase() || "caf"}${demo ? "-demo" : ""}`;
+const codePrefix = `${config?.prefix || "CAF"}${demo ? "-DEMO" : ""}`;
 const store = {
-  get(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } },
-  set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* fără memorie: merge doar acum */ } }
+  get(key) { try { return JSON.parse(localStorage.getItem(`${namespace}-${key}`)); } catch { return null; } },
+  set(key, value) { try { localStorage.setItem(`${namespace}-${key}`, JSON.stringify(value)); } catch { /* fără memorie: merge doar acum */ } }
 };
 const day = (offset = 0) => {
   const date = new Date();
@@ -26,7 +28,7 @@ function setupWelcome() {
   const pill = document.querySelector(".voucher-pill");
   if (!dialog || !config) return;
   const steps = Object.fromEntries([...dialog.querySelectorAll(".welcome-step")].map((el) => [el.dataset.step, el]));
-  const live = Boolean(config.supabaseUrl && config.supabaseKey);
+  const live = !demo && Boolean(config.supabaseUrl && config.supabaseKey);
   let email = "";
   let demoCode = "";
 
@@ -43,12 +45,12 @@ function setupWelcome() {
 
   function showVoucher(voucher) {
     const qr = qrcode(0, "M");
-    qr.addData(`${config.prefix} VOUCHER ESPRESSO ${voucher.code} PANA LA ${voucher.until}`);
+    qr.addData(`${codePrefix} VOUCHER ESPRESSO ${voucher.code} PANA LA ${voucher.until}`);
     qr.make();
     const ticket = steps.voucher;
     ticket.querySelector(".ticket-qr").innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
-    ticket.querySelector(".ticket-code").textContent = config.prefix + "-" + voucher.code;
-    ticket.querySelector(".ticket-until").textContent = "Valabil până pe " + human(voucher.until);
+    ticket.querySelector(".ticket-code").textContent = `${codePrefix}-${voucher.code}`;
+    ticket.querySelector(".ticket-until").textContent = demo ? "Cod de probă" : "Valabil până pe " + human(voucher.until);
     go("voucher");
     pill.hidden = false;
   }
@@ -71,7 +73,7 @@ function setupWelcome() {
     const consent = steps.email.querySelector("input[type=checkbox]");
     fail("email", "");
     if (!input.checkValidity() || !input.value.trim()) return fail("email", "Scrie o adresă de e-mail validă.");
-    if (!consent.checked) return fail("email", "Bifează acordul, ca să-ți putem trimite codul.");
+    if (consent && !consent.checked) return fail("email", "Bifează acordul, ca să-ți putem trimite codul.");
     email = input.value.trim().toLowerCase();
     const button = steps.email.querySelector("button");
     button.disabled = true;
@@ -81,10 +83,12 @@ function setupWelcome() {
       } else {
         demoCode = String(crypto.getRandomValues(new Uint32Array(1))[0] % 1e6).padStart(6, "0");
         const note = steps.code.querySelector(".welcome-demo");
-        note.textContent = `Mod demonstrație: în varianta finală codul vine pe e-mail. Codul tău este ${demoCode}.`;
+        note.textContent = `Cod de probă: ${demoCode}.`;
         note.hidden = false;
       }
-      steps.code.querySelector(".welcome-to").textContent = email;
+      const recipient = steps.code.querySelector(".welcome-to");
+      if (recipient) recipient.textContent = email;
+      steps.code.querySelector("input").value = "";
       go("code");
     } catch {
       fail("email", "Nu am putut trimite codul acum. Încearcă din nou în câteva minute.");
@@ -109,10 +113,10 @@ function setupWelcome() {
           return fail("code", "Pe adresa asta s-a dat deja un voucher. Ne vedem la o cafea!");
         }
       } else if (token !== demoCode) {
-        return fail("code", "Codul nu se potrivește. Verifică e-mailul.");
+        return fail("code", "Codul nu se potrivește. Verifică cele șase cifre afișate.");
       }
-      const voucher = { code: code(), until: isoDay(day(30)), email };
-      store.set("caf-voucher", voucher);
+      const voucher = { code: code(), until: isoDay(day(30)) };
+      store.set("voucher", voucher);
       showVoucher(voucher);
     } catch {
       fail("code", "Codul nu e bun sau a expirat. Cere altul.");
@@ -124,22 +128,23 @@ function setupWelcome() {
   dialog.querySelector(".welcome-back").addEventListener("click", () => go("email"));
   dialog.addEventListener("click", (event) => { if (event.target === dialog) dialog.close(); });
   dialog.addEventListener("close", () => {
-    if (!store.get("caf-voucher")) store.set("caf-voucher-amanat", Date.now());
+    if (!demo && !store.get("voucher")) store.set("voucher-amanat", Date.now());
   });
   pill.addEventListener("click", open);
+  document.querySelector("[data-voucher]")?.addEventListener("click", open);
   // Butonul apare doar după prima secțiune, ca să nu acopere butoanele de sus.
   const togglePill = () => pill.classList.toggle("is-visible", scrollY > innerHeight * .7);
   addEventListener("scroll", togglePill, { passive: true });
   togglePill();
 
-  const saved = store.get("caf-voucher");
+  const saved = store.get("voucher");
   if (saved) {
     showVoucher(saved);
     return;
   }
   // Fereastra apare singură la intrare; dacă a închis-o, nu mai insistăm o săptămână.
-  const later = store.get("caf-voucher-amanat");
-  if (!later || Date.now() - later > 7 * 864e5) setTimeout(open, 1800);
+  const later = store.get("voucher-amanat");
+  if (!demo && (!later || Date.now() - later > 7 * 864e5)) setTimeout(open, 1800);
 }
 
 function setupWheel() {
@@ -166,15 +171,15 @@ function setupWheel() {
     const detail = document.createElement("span");
     const left = document.createElement("span");
     left.className = "wheel-left";
-    detail.textContent = `Cod ${config.prefix}-${spin.code}. Arată ecranul la bar. ${config.wheelValid}`;
     const kicker = document.createElement("span");
     kicker.className = "wheel-kicker";
-    kicker.textContent = "Ai câștigat";
+    kicker.textContent = demo ? "Premiu demonstrativ" : "Ai câștigat";
     const ticket = document.createElement("span");
     ticket.className = "wheel-code";
-    ticket.textContent = `${config.prefix}-${spin.code}`;
-    detail.textContent = `Arată codul la bar. ${config.wheelValid}`;
+    ticket.textContent = `${codePrefix}-${spin.code}`;
+    detail.textContent = demo ? config.wheelValid : `Arată codul la bar. ${config.wheelValid}`;
     result.append(kicker, prize, ticket, left, detail);
+    if (demo) return;
     const update = () => {
       const midnight = new Date();
       midnight.setHours(24, 0, 0, 0);
@@ -232,6 +237,13 @@ function setupWheel() {
         + '<form method="dialog"><button class="button button-light">Super, mulțumesc!</button></form></div>';
       document.body.append(stage);
       stage.addEventListener("click", (event) => { if (event.target === stage) stage.close(); });
+      stage.addEventListener("close", () => {
+        if (!demo) return;
+        button.textContent = "Învârte din nou";
+        button.disabled = false;
+        busy = false;
+        button.focus();
+      });
     }
     const name = stage.querySelector(".prize-name");
     name.innerHTML = "";
@@ -241,8 +253,9 @@ function setupWheel() {
       span.style.setProperty("--i", i);
       name.append(span, " ");
     });
-    stage.querySelector(".prize-code").textContent = `Cod ${config.prefix}-${spin.code} · arată ecranul la bar`;
-    stage.querySelector(".prize-time").textContent = result.querySelector(".wheel-left")?.textContent.replace("Mai ai", "Valabil azi, mai ai") || config.wheelValid;
+    stage.querySelector(".prize-kicker").textContent = demo ? "Premiu demonstrativ" : "Ai câștigat";
+    stage.querySelector(".prize-code").textContent = demo ? `Cod ${codePrefix}-${spin.code}` : `Cod ${codePrefix}-${spin.code} · arată ecranul la bar`;
+    stage.querySelector(".prize-time").textContent = demo ? config.wheelValid : (result.querySelector(".wheel-left")?.textContent.replace("Mai ai", "Valabil azi, mai ai") || config.wheelValid);
     stage.showModal();
     if (calm) return;
     stage.querySelector(".prize-card").animate(
@@ -262,7 +275,7 @@ function setupWheel() {
     pointer.animate([{ transform: "rotate(-22deg)" }, { transform: "rotate(0deg)" }], { duration: 160, easing: "cubic-bezier(.2,.8,.3,1)" });
   }
 
-  const saved = store.get("caf-roata");
+  const saved = demo ? null : store.get("roata");
   if (saved && saved.date === isoDay(day())) {
     const sliceIndex = saved.slice ?? saved.index;
     angle = 360 - (sliceIndex + .5) * slice;
@@ -292,13 +305,15 @@ function setupWheel() {
       angle = end;
       turn(angle);
       wrap.classList.remove("is-spinning");
-      store.set("caf-roata", record);
       highlight(sliceIndex);
       announce(record);
       burst(wrap);
       setTimeout(() => reveal(record), calm ? 0 : 450);
-      lock();
-      busy = false;
+      if (!demo) {
+        store.set("roata", record);
+        lock();
+        busy = false;
+      }
     };
     if (calm) return finish();
 
@@ -328,7 +343,7 @@ function setupWheel() {
 // pe telefon din dreapta spre stânga. Lumina din fundal ia culoarea produsului din centru.
 function setupSpecials() {
   const section = document.querySelector(".specials");
-  if (!section) return;
+  if (!section || calm) return;
   const track = section.querySelector(".specials-track");
   const sticky = section.querySelector(".specials-sticky");
   const items = [...section.querySelectorAll(".special")];

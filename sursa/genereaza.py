@@ -360,6 +360,8 @@ if profiles:
     main_shop["sameAs"] = profiles
 
 nav = [("locatii", "Locație"), ("meniu", "Meniu")]
+if DATA["extra"]["activ"]:
+    nav.append(("oferte", "Cadouri"))
 if gallery:
     nav.append(("atelier", "Galerie"))
 if story:
@@ -417,7 +419,7 @@ values = {
     "heroMobileHeight": DATA["imagini"]["hero"]["inaltimeMobil"],
     "reviewsUrl": esc(links["recenzii"] or map_search),
     "reviewsRating": (
-        f'<p class="reviews-rating"><strong>{esc(rating["scor"])}</strong><span>din 5 · {esc(rating["numar"])} de păreri</span></p>'
+        f'<p class="reviews-rating"><strong>{esc(rating["scor"])}</strong><span>din 5 · {esc(rating["numar"])} de păreri pe Google Maps</span></p>'
         if rating else ""
     ),
     "addressD": esc(dorohoi["adresa"]),
@@ -446,8 +448,8 @@ values = {
     "mapB": esc(map_embed(botosani)),
     "storyLarge": frame(story["imagineMare"], " story-large", "(min-width: 900px) 40vw, 80vw") if story.get("imagineMare") else "",
     "storySmall": frame(story["imagineMica"], " story-small", "(min-width: 900px) 24vw, 45vw") if story.get("imagineMica") else "",
-    "storyThird": frame(TEXT["poveste"]["imagineTrei"], " story-third", "(min-width: 900px) 16vw, 30vw") if TEXT["poveste"].get("imagineTrei") else "",
-    "storyYear": f'<span class="story-year" aria-hidden="true">{esc(TEXT["poveste"].get("an", ""))}</span>' if TEXT["poveste"].get("an") else "",
+    "storyThird": "\n          " + frame(story["imagineTrei"], " story-third", "(min-width: 900px) 16vw, 30vw") if story.get("imagineTrei") else "",
+    "storyYear": f'\n          <span class="story-year" aria-hidden="true">{esc(story["an"])}</span>' if story.get("an") else "",
     "storyKeys": esc(",".join(TEXT["poveste"].get("cuvinteCheie", []))),
     "woodImages": "".join(figure(key, f" w{i}") for i, key in enumerate(TEXT["galerie"]["imagini"])),
     "woodWindow": (
@@ -492,7 +494,7 @@ extra_script = (
 def with_extras(base, on, demo=False):
     out = dict(base)
     out.update({
-        "extraHead": (('<meta name="robots" content="noindex">' if demo else "") + extra_head) if on else "",
+        "extraHead": extra_head if on else "",
         "extraModal": extras["modal"] if on else "",
         "extraAfterMenu": extras["afterMenu"] if on else "",
         "extraOffers": extras["offers"] if on else "",
@@ -500,7 +502,13 @@ def with_extras(base, on, demo=False):
     })
     if demo:
         out["canonical"] = ""
+        out["demoRobots"] = '<meta name="robots" content="noindex">'
     return out
+
+
+def render(template, values):
+    page = re.sub(r"\{\{(\w+)\}\}", lambda match: str(values[match[1]]), template)
+    return re.sub(r"^[ \t]+$", "", page, flags=re.MULTILINE)
 
 
 template = (SOURCE / "pagina.html").read_text(encoding="utf-8")
@@ -513,12 +521,11 @@ for name, enabled in sections.items():
         flags=re.DOTALL,
     )
 live = with_extras(values, extras_enabled)
-page = re.sub(r"\{\{(\w+)\}\}", lambda match: str(live[match[1]]), template)
-(ROOT / "index.html").write_text(page, encoding="utf-8", newline="\n")
+(ROOT / "index.html").write_text(render(template, live), encoding="utf-8", newline="\n")
 # Varianta de prezentare pentru patron, cu toate propunerile (neindexată, fără link de pe site).
 if extras_enabled:
     demo = with_extras(values, True, demo=True)
-    (ROOT / "demo.html").write_text(re.sub(r"\{\{(\w+)\}\}", lambda match: str(demo[match[1]]), template), encoding="utf-8", newline="\n")
+    (ROOT / "demo.html").write_text(render(template, demo), encoding="utf-8", newline="\n")
 else:
     (ROOT / "demo.html").unlink(missing_ok=True)
 
@@ -538,8 +545,11 @@ def qr_item(product):
     )
 
 
+qr_path = ROOT / "assets/img/qr-meniu.svg"
 menu_values = dict(values)
 menu_values.update({
+    "tableCardLink": '<a class="text-link" href="print/card-masa.html">Cartonaș QR pentru masă</a>' if demo_menu and qr_path.exists() else "",
+    "tableCardNote": "Meniu demonstrativ" if demo_menu else "Scanează pentru meniul cafenelei",
     "menuDemoNotice": demo_notice,
     "menuEmptyNotice": empty_notice,
     "menuAddress": esc(f'{dorohoi["adresa"]}, {dorohoi["oras"]}') + (f' · {values["scheduleLabelD"]}' if dorohoi["program"] else ""),
@@ -553,15 +563,14 @@ menu_values.update({
     ),
 })
 menu_template = (SOURCE / "meniu.html").read_text(encoding="utf-8")
-(ROOT / "meniu.html").write_text(re.sub(r"\{\{(\w+)\}\}", lambda m: str(menu_values[m[1]]), menu_template), encoding="utf-8", newline="\n")
+(ROOT / "meniu.html").write_text(render(menu_template, menu_values), encoding="utf-8", newline="\n")
 
 # Cartonașul de masă pentru tipar (print/card-masa.html); codul QR îl face sursa/qr.py.
-qr_path = ROOT / "assets/img/qr-meniu.svg"
 if qr_path.exists():
     card_values = dict(menu_values, qr=qr_path.read_text(encoding="utf-8"))
     card_template = (SOURCE / "card-masa.html").read_text(encoding="utf-8")
     (ROOT / "print").mkdir(exist_ok=True)
-    (ROOT / "print/card-masa.html").write_text(re.sub(r"\{\{(\w+)\}\}", lambda m: str(card_values[m[1]]), card_template), encoding="utf-8", newline="\n")
+    (ROOT / "print/card-masa.html").write_text(render(card_template, card_values), encoding="utf-8", newline="\n")
 
 
 robots = "User-agent: *\nAllow: /\n"

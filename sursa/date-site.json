@@ -6,7 +6,7 @@
   "atelier": "",
   "deschidere": "",
   "linkuri": {
-    "recenzii": "",
+    "recenzii": "https://www.google.com/maps/place/AIYR+Coffee/data=!4m7!3m6!1s0x47346100715c225f:0xb4c6591201c3e40e!8m2!3d47.9545741!4d26.3971855!16s%2Fg%2F11y_xgzvdb!19sChIJXyJccQBhNEcRDuTDARJZxrQ",
     "harta": "",
     "instagram": "",
     "facebook": "",
@@ -164,8 +164,30 @@
       ]
     }
   ],
-  "evaluareGoogle": null,
-  "recenzii": [],
+  "evaluareGoogle": {
+    "scor": "4,9",
+    "numar": 72
+  },
+  "recenzii": [
+    {
+      "autor": "Patricia Miron",
+      "stele": 5,
+      "text": "Really, really cozy place.",
+      "url": "https://www.google.com/maps/place/AIYR+Coffee/data=!4m7!3m6!1s0x47346100715c225f:0xb4c6591201c3e40e!8m2!3d47.9545741!4d26.3971855!16s%2Fg%2F11y_xgzvdb!19sChIJXyJccQBhNEcRDuTDARJZxrQ"
+    },
+    {
+      "autor": "Andrei Spetco",
+      "stele": 5,
+      "text": "Great coffee and kind staff!",
+      "url": "https://www.google.com/maps/place/AIYR+Coffee/data=!4m7!3m6!1s0x47346100715c225f:0xb4c6591201c3e40e!8m2!3d47.9545741!4d26.3971855!16s%2Fg%2F11y_xgzvdb!19sChIJXyJccQBhNEcRDuTDARJZxrQ"
+    },
+    {
+      "autor": "Isabela Strungariu",
+      "stele": 5,
+      "text": "Superb!☕️",
+      "url": "https://www.google.com/maps/place/AIYR+Coffee/data=!4m7!3m6!1s0x47346100715c225f:0xb4c6591201c3e40e!8m2!3d47.9545741!4d26.3971855!16s%2Fg%2F11y_xgzvdb!19sChIJXyJccQBhNEcRDuTDARJZxrQ"
+    }
+  ],
   "fotografiiIlustrative": false,
   "surseFoto": [
     {
@@ -210,10 +232,95 @@
       "inaltime": 1333,
       "alt": "Cafea cu desen în spumă și un croissant pe o masă la soare.",
       "titlu": "Cafea și croissant"
+    },
+    "fatadaVerticala": {
+      "fisier": "coperta-mobil-aiyr.webp",
+      "latime": 800,
+      "inaltime": 1080,
+      "alt": "Firma luminoasă și intrarea în AIYR Coffee.",
+      "titlu": "Fațada cafenelei"
     }
   },
   "extra": {
-    "activ": false
+    "activ": true,
+    "demo": true,
+    "specialitati": {
+      "titlu": "Specialități propuse",
+      "text": "Trei exemple din meniul demonstrativ.",
+      "produse": [
+        "Cappuccino",
+        "Limonadă cu mentă",
+        "Croissant cu unt"
+      ],
+      "tente": {
+        "Cappuccino": "#c08a5e",
+        "Limonadă cu mentă": "#6fa86a",
+        "Croissant cu unt": "#e0ac4f"
+      },
+      "ingrediente": {
+        "Cappuccino": [
+          "bob",
+          "bob",
+          "bob",
+          "bob",
+          "bob",
+          "bob"
+        ],
+        "Limonadă cu mentă": [
+          "frunza",
+          "lime",
+          "frunza",
+          "frunza",
+          "lime",
+          "frunza"
+        ],
+        "Croissant cu unt": [
+          "firimitura",
+          "firimitura",
+          "bob",
+          "firimitura",
+          "firimitura",
+          "firimitura"
+        ]
+      }
+    },
+    "voucher": {
+      "titlu": "Voucher pentru un espresso",
+      "text": "Încearcă voucherul cu adresa de test. Codul de verificare apare pe ecran.",
+      "conditii": "Exemplu de voucher pentru prezentare.",
+      "imagine": "cafeaCroissant"
+    },
+    "roata": {
+      "titlu": "Roata de cadouri",
+      "text": "Testează roata cu premii de exemplu. Poți încerca de mai multe ori.",
+      "premii": [
+        {
+          "nume": "Topping gratuit",
+          "scurt": "Topping"
+        },
+        {
+          "nume": "10% reducere",
+          "scurt": "−10%"
+        },
+        {
+          "nume": "Limonadă din partea casei",
+          "scurt": "Limonadă"
+        },
+        {
+          "nume": "Shot extra de espresso",
+          "scurt": "Shot extra"
+        },
+        {
+          "nume": "Croissant la jumătate de preț",
+          "scurt": "Croissant ½"
+        },
+        {
+          "nume": "15% reducere",
+          "scurt": "−15%"
+        }
+      ],
+      "valabilitate": "Exemplu de premiu pentru prezentare."
+    }
   },
   "locatii": [
     {
@@ -236,11 +343,23 @@
     },
     "hero": "AIYR Coffee",
     "heroSubtitlu": "Cafenea în Dorohoi · Strada Războieni 1",
-    "poveste": {},
+    "poveste": {
+      "titlu": "Cafeneaua de pe Războieni",
+      "lead": "Terasa AIYR Coffee se vede de la stradă, sub firma luminoasă.",
+      "text": "Înăuntru, mesele din lemn sunt așezate în fața barului. Galeria surprinde cafeneaua și câteva dintre produsele fotografiate de vizitatori.",
+      "imagineMare": "interior",
+      "imagineMica": "fatadaVerticala",
+      "cuvinteCheie": [
+        "terasa",
+        "aiyr",
+        "barului"
+      ]
+    },
     "galerie": {
       "imagini": [
         "interior",
-        "cafeaCroissant"
+        "cafeaCroissant",
+        "fatadaVerticala"
       ],
       "titlu": "Galerie",
       "text": ""
@@ -255,7 +374,10 @@
       "descriere": "Meniul AIYR Coffee din Dorohoi.",
       "linkPoveste": "Înapoi la site",
       "imagine": "hero"
-    }
+    },
+    "heroCuvinteAurii": [
+      "aiyr"
+    ]
   },
   "folderImagini": "assets/img/aiyr/"
 }

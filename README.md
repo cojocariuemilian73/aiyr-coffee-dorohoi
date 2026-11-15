@@ -7,6 +7,8 @@ Site-ul AIYR Coffee Dorohoi, adaptat din șablonul de cafenea. [Deschide site-ul
 - Pune fotografiile cafenelei în `assets/img/aiyr/`, actualizează intrările din `imagini` și rulează `python sursa/optimizeaza_imagini.py`. Înlocuiește sigla provizorie din `favicon.png`. Actualizează `fotografiiIlustrative` și `surseFoto` după înlocuirea imaginii.
 - Adaugă meniul și prețurile în `meniu`, programul și telefonul în `locatii`, iar profilele și adresele de contact în `linkuri`. Secțiunile de poveste, galerie și recenzii apar când primesc conținut.
 - Pentru prezentare, produsele și prețurile din `meniu` sunt exemple. După ce le înlocuiești cu meniul aprobat de cafenea, setează `meniuExemplu` la `false` și regenerează paginile.
+- Roata și voucherul au modul demo activat în `extra.demo`. Premiile și codurile sunt de probă. Voucherul folosește o adresă prestabilită și afișează codul direct pe pagină.
+- Deschide `print/card-masa.html` pentru cartonașele cu QR către pagina de meniu.
 - După stabilirea adresei publice, completează `publicUrl` înainte să generezi cartonașul pentru mese cu `python sursa/qr.py` și apoi `python sursa/genereaza.py`.
 
 Adresa publică găsită este Strada Războieni 1, Dorohoi. [Intrarea din directorul Am Găsit](https://am-gasit.ro/aiyr-coffee-strada-razboieni-1-715200-dorohoi/).

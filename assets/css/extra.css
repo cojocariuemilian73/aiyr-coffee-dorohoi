@@ -105,6 +105,11 @@
 .ticket-label { font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #7a5a40; }
 .ticket-code { font: 700 1.25rem/1.1 var(--sans); letter-spacing: .06em; white-space: nowrap; font-variant-numeric: lining-nums tabular-nums; }
 .ticket-until { font-size: .8rem; color: #5b4636; }
+@media (max-width: 520px) {
+  .ticket { grid-template-columns: clamp(52px, 17vw, 80px) minmax(0, 1fr); gap: 12px; padding: 12px; }
+  .ticket-qr svg { width: 100%; height: auto; }
+  .ticket-code { font-size: clamp(.76rem, 3.4vw, 1.05rem); letter-spacing: .025em; white-space: normal; overflow-wrap: anywhere; }
+}
 
 /* Roata norocului. */
 .wheel-wrap { position: relative; justify-self: center; width: min(100%, 320px); aspect-ratio: 1; margin-block: 4px; padding: 0; background: none; border: 0; border-radius: 50%; cursor: pointer; -webkit-tap-highlight-color: transparent; }

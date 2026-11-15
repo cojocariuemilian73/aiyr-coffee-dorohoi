@@ -85,10 +85,9 @@ preferences.add("(prefers-reduced-motion: no-preference)", () => {
   };
 });
 
-// Efectele legate de derulare (Povestea și fereastra de la Atelier) merg și cu „animații reduse”:
-// se mișcă doar cât derulează omul, deci nu pornesc singure.
+// Povestea și galeria se animă la derulare când mișcarea este permisă.
 const scrolly = gsap.matchMedia();
-scrolly.add("(min-width: 0px)", () => {
+scrolly.add("(prefers-reduced-motion: no-preference)", () => {
   // 5a. Povestea: textul se aprinde cuvânt cu cuvânt, iar pozele plutesc la viteze diferite.
   const storySection = document.querySelector(".story");
   const storyParagraphs = gsap.utils.toArray(".story-text .lead, .story-text .lead + p");
@@ -114,10 +113,13 @@ scrolly.add("(min-width: 0px)", () => {
       opacity: 1, stagger: .06, ease: "none",
       scrollTrigger: { trigger: ".story-text", start: "top 78%", end: "bottom 42%", scrub: true }
     });
-    const drift = (selector, from, to) => gsap.fromTo(selector, from, {
-      ...to, ease: "none",
-      scrollTrigger: { trigger: ".story", start: "top bottom", end: "bottom top", scrub: true }
-    });
+    const drift = (selector, from, to) => {
+      const element = document.querySelector(selector);
+      if (element) gsap.fromTo(element, from, {
+        ...to, ease: "none",
+        scrollTrigger: { trigger: ".story", start: "top bottom", end: "bottom top", scrub: true }
+      });
+    };
     drift(".story-large", { y: 70, rotate: -2.5 }, { y: -70, rotate: 1 });
     drift(".story-small", { y: 150, rotate: 3 }, { y: -150, rotate: -3 });
     drift(".story-third", { y: 240, rotate: 8 }, { y: -220, rotate: -2 });

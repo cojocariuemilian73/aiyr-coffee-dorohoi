@@ -8,6 +8,7 @@ import math
 
 def build(data, esc, image, frame):
     extra = data["extra"]
+    demo = extra.get("demo", False) or data.get("meniuExemplu", False)
     products = {p["nume"]: p for category in data["meniu"] for p in category["produse"]}
 
     def price(product):
@@ -105,12 +106,15 @@ def build(data, esc, image, frame):
     voucher = extra["voucher"]
     mail = extra.get("email", {})
     config = {
+        "demo": demo,
         "prizes": [p["nume"] for p in prizes],
         "wheelValid": wheel["valabilitate"],
         "prefix": data["texte"]["logo"]["mare"],
-        "supabaseUrl": mail.get("supabaseUrl", ""),
-        "supabaseKey": mail.get("supabaseCheie", ""),
+        "supabaseUrl": "" if demo else mail.get("supabaseUrl", ""),
+        "supabaseKey": "" if demo else mail.get("supabaseCheie", ""),
     }
+    config_json = json.dumps(config, ensure_ascii=False).replace("<", "\\u003c")
+    voucher_button = '<button type="button" class="button button-outline" data-voucher>Încearcă voucherul demo</button>' if demo else ""
     offers = (
         '<section class="section offers" id="oferte" aria-labelledby="offers-title"><div class="shell">'
         '<div class="offer-grid">'
@@ -118,44 +122,50 @@ def build(data, esc, image, frame):
         f'<button type="button" class="wheel-wrap" aria-label="Învârte roata">{wheel_svg}</button>'
         '<button type="button" class="button button-dark" data-spin>Învârte roata</button>'
         '<p class="wheel-hint">Sau apasă direct pe roată.</p>'
-        '<p class="wheel-result" role="status"></p></article>'
+        f'<p class="wheel-result" role="status"></p>{voucher_button}</article>'
         '</div></div>'
-        f'<script id="extra-config" type="application/json">{json.dumps(config, ensure_ascii=False)}</script>'
+        f'<script id="extra-config" type="application/json">{config_json}</script>'
         '</section>'
     )
 
     # --- Fereastra cu voucherul: e-mail, cod de confirmare, voucher ---
+    email_field = '<input id="welcome-email" type="email" value="demo@example.com" readonly>' if demo else '<input id="welcome-email" type="email" autocomplete="email" required placeholder="nume@exemplu.ro">'
+    consent_field = "" if demo else f'<label class="welcome-consent"><input type="checkbox" required> <span>{esc(voucher["acord"])}</span></label>'
+    request_label = "Generează codul de probă" if demo else "Trimite-mi codul"
+    sent_message = '<p>Introdu codul afișat mai jos.</p>' if demo else '<p>Ți-am trimis un cod de 6 cifre la <strong class="welcome-to"></strong>. Scrie-l aici.</p>'
+    voucher_message = '<p>Voucher demonstrativ. Codul este pentru prezentare.</p>' if demo else '<p>Gata! Arată voucherul la bar, la prima vizită.</p>'
+    ticket_label = "Voucher espresso · demo" if demo else "Espresso din partea casei"
+    voucher_shortcut = "Voucherul demo" if demo else "Voucherul tău ☕"
+    voucher_image = voucher.get("imagine", "vEspresso")
     modal = (
         '<dialog class="welcome" aria-labelledby="welcome-title">'
         '<form method="dialog" class="welcome-close"><button aria-label="Închide">×</button></form>'
-        f'<div class="welcome-photo" aria-hidden="true">{image("vEspresso", sizes="(min-width: 700px) 320px, 100vw")}</div>'
+        f'<div class="welcome-photo" aria-hidden="true">{image(voucher_image, sizes="(min-width: 700px) 320px, 100vw")}</div>'
         '<div class="welcome-body">'
         f'<h2 id="welcome-title">{esc(voucher["titlu"])}</h2>'
         # Pasul 1: adresa de e-mail
         '<form class="welcome-step" data-step="email" novalidate>'
         f'<p>{esc(voucher["text"])}</p>'
-        '<label for="welcome-email">Adresa de e-mail</label>'
-        '<input id="welcome-email" type="email" autocomplete="email" required placeholder="nume@exemplu.ro">'
-        f'<label class="welcome-consent"><input type="checkbox" required> <span>{esc(voucher["acord"])}</span></label>'
-        '<button class="button button-dark">Trimite-mi codul</button>'
+        f'<label for="welcome-email">{"Adresă de test" if demo else "Adresa de e-mail"}</label>'
+        f'{email_field}{consent_field}<button class="button button-dark">{request_label}</button>'
         '<p class="welcome-error" role="alert"></p></form>'
         # Pasul 2: codul primit
         '<form class="welcome-step" data-step="code" hidden novalidate>'
-        '<p>Ți-am trimis un cod de 6 cifre la <strong class="welcome-to"></strong>. Scrie-l aici.</p>'
+        f'{sent_message}'
         '<label for="welcome-code">Codul de confirmare</label>'
         '<input id="welcome-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>'
         '<button class="button button-dark">Confirmă</button>'
         '<p class="welcome-demo" hidden></p>'
-        '<button type="button" class="welcome-back">Altă adresă de e-mail</button>'
+        f'<button type="button" class="welcome-back">{"Generează alt cod" if demo else "Altă adresă de e-mail"}</button>'
         '<p class="welcome-error" role="alert"></p></form>'
         # Pasul 3: voucherul
         '<div class="welcome-step" data-step="voucher" hidden>'
-        '<p>Gata! Arată voucherul la bar, la prima vizită.</p>'
+        f'{voucher_message}'
         '<div class="ticket"><div class="ticket-qr" aria-hidden="true"></div>'
-        '<div class="ticket-info"><span class="ticket-label">Espresso din partea casei</span>'
+        f'<div class="ticket-info"><span class="ticket-label">{ticket_label}</span>'
         '<strong class="ticket-code"></strong><span class="ticket-until"></span></div></div>'
         f'<small>{esc(voucher["conditii"])}</small></div>'
         '</div></dialog>'
-        '<button type="button" class="voucher-pill" hidden>Voucherul tău ☕</button>'
+        f'<button type="button" class="voucher-pill" hidden>{voucher_shortcut}</button>'
     )
     return {"offers": offers, "afterMenu": specials, "modal": modal}
