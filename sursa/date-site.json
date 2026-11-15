@@ -476,12 +476,7 @@
     },
     "hero": "AIYR Coffee",
     "heroSubtitlu": "Cafenea în Dorohoi · Strada Războieni 1",
-    "poveste": {
-      "titlu": "Cafeneaua de pe Războieni",
-      "lead": "Terasa AIYR Coffee se vede de la stradă, sub firma luminoasă.",
-      "text": "Înăuntru, mesele din lemn sunt așezate în fața barului.",
-      "imagineMare": "interior"
-    },
+    "poveste": {},
     "galerie": {
       "imagini": [
         "cafeaCroissant",
