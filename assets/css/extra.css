@@ -25,7 +25,6 @@
 .special-copy p { color: var(--muted); }
 .special-copy .price { color: var(--oak); font-weight: 700; font-size: 1.1rem; }
 .special-kicker { font: 700 .78rem var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--tint-own); }
-@media (min-width: 900px) { .special-list { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; } }
 @media (hover: hover) and (pointer: fine) {
   .special:hover .special-visual::before { opacity: 1; }
   .special:hover .special-photo { box-shadow: 0 0 0 5px color-mix(in oklab, var(--tint-own) 42%, var(--paper)), 0 36px 72px -34px #000; }
@@ -36,7 +35,7 @@
 
 .specials-dots { display: none; }
 
-@media (prefers-reduced-motion: no-preference) and (min-height: 560px) {
+@media (min-height: 560px) {
   .specials.is-scrolly { overflow: visible; }
   .is-scrolly .specials-track { min-height: calc((var(--special-count) + .4) * 100svh); }
   .is-scrolly .specials-sticky {
@@ -78,12 +77,15 @@
     height: 8px;
     border-radius: 999px;
     background: color-mix(in oklab, var(--ink) 26%, transparent);
-    transition: width .22s var(--ease-out), background-color .22s var(--ease-out);
   }
   .specials-dots .is-on { width: 24px; background: var(--oak); }
 }
 
-@media (prefers-reduced-motion: no-preference) and (min-height: 560px) and (min-width: 900px) {
+@media (prefers-reduced-motion: no-preference) {
+  .specials-dots span { transition: width .22s var(--ease-out), background-color .22s var(--ease-out); }
+}
+
+@media (min-height: 560px) and (min-width: 900px) {
   .is-scrolly .specials-inner { padding-bottom: 24px; }
   .is-scrolly .special {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);

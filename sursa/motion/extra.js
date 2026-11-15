@@ -360,7 +360,8 @@ function setupSpecials() {
   if (cards.length < 2) return;
 
   const dots = [...track.querySelectorAll(".specials-dots span")];
-  const enabled = matchMedia("(prefers-reduced-motion: no-preference) and (min-height: 560px)");
+  const enabled = matchMedia("(min-height: 560px)");
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
   const wide = matchMedia("(min-width: 900px)");
   const last = cards.length - 1;
   const clamp = value => Math.min(1, Math.max(0, value));
@@ -377,14 +378,14 @@ function setupSpecials() {
     previousProgress = progress;
     const step = Math.min(last - 1, Math.floor(progress));
     const blend = clamp((progress - step - .25) / .5);
-    const current = step + blend * blend * (3 - 2 * blend);
+    const current = reduced.matches ? Math.round(progress) : step + blend * blend * (3 - 2 * blend);
     const active = Math.round(current);
     cards.forEach((card, index) => {
       const distance = index - current;
       const depth = Math.min(1.5, Math.abs(distance));
       card.style.setProperty("--special-shift", `${distance * (wide.matches ? 102 : 66)}%`);
       card.style.setProperty("--special-depth", String(depth));
-      card.style.setProperty("--special-image-alpha", String(clamp(1 - depth * .82)));
+      card.style.setProperty("--special-image-alpha", String(clamp(1 - depth)));
       card.style.setProperty("--special-copy-alpha", String(clamp(1 - depth * 2.3)));
       card.style.setProperty("--special-layer", String(10 - Math.round(depth * 4)));
       dots[index]?.classList.toggle("is-on", index === active);
@@ -402,6 +403,7 @@ function setupSpecials() {
   }
 
   enabled.addEventListener("change", refresh);
+  reduced.addEventListener("change", refresh);
   addEventListener("resize", refresh);
   addEventListener("scroll", schedule, { passive: true });
   refresh();
