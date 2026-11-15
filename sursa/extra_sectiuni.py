@@ -40,9 +40,12 @@ def build(data, esc, image):
         )
     specials = (
         '<section class="specials" id="specialitati" aria-labelledby="specials-title">'
+        f'<div class="specials-track" style="--special-count:{len(cards)}"><div class="specials-sticky">'
         '<div class="shell specials-inner">'
         f'<div class="specials-head"><h2 id="specials-title">{esc(spec["titlu"])}</h2><p>{esc(spec["text"])}</p></div>'
-        f'<ul class="special-list">{"".join(cards)}</ul></div></section>'
+        f'<ul class="special-list">{"".join(cards)}</ul>'
+        f'<div class="specials-dots" aria-hidden="true">{"<span></span>" * len(cards)}</div>'
+        '</div></div></div></section>'
     ) if cards else ""
 
     # --- Roata: 12 felii (fiecare premiu de două ori, față în față), becuri, cuie, ac și butuc ---

@@ -350,29 +350,61 @@ function setupWheel() {
   button.addEventListener("click", spin);
 }
 
-// Fotografiile se deschid pe rând, fără să schimbe poziția produselor.
+// Derularea schimbă produsul vizibil în cadrul fix al secțiunii.
 function setupSpecials() {
-  const cards = [...document.querySelectorAll(".special")];
-  if (!cards.length || calm) return;
+  const section = document.querySelector(".specials");
+  const track = section?.querySelector(".specials-track");
+  const sticky = section?.querySelector(".specials-sticky");
+  if (!track || !sticky) return;
+  const cards = [...track.querySelectorAll(".special")];
+  if (cards.length < 2) return;
 
-  const narrow = matchMedia("(max-width: 899px)");
-  const timing = { easing: "cubic-bezier(.23, 1, .32, 1)", fill: "backwards" };
-  const observer = new IntersectionObserver((entries) => {
-    for (const { target, isIntersecting } of entries) {
-      if (!isIntersecting) continue;
-      const delay = narrow.matches ? 0 : cards.indexOf(target) * 110;
-      target.querySelector(".special-photo").animate([
-        { clipPath: "circle(28% at 50% 53%)", opacity: .45, transform: "translateY(16px) rotate(-5deg)" },
-        { clipPath: "circle(72% at 50% 50%)", opacity: 1, transform: "none" }
-      ], { ...timing, delay, duration: 680 });
-      target.querySelector(".special-copy").animate([
-        { opacity: .45, transform: "translateY(12px)" },
-        { opacity: 1, transform: "none" }
-      ], { ...timing, delay: delay + 90, duration: 530 });
-      observer.unobserve(target);
-    }
-  }, { rootMargin: "0px 0px 8% 0px" });
-  cards.forEach((card) => observer.observe(card));
+  const dots = [...track.querySelectorAll(".specials-dots span")];
+  const enabled = matchMedia("(prefers-reduced-motion: no-preference) and (min-height: 560px)");
+  const wide = matchMedia("(min-width: 900px)");
+  const last = cards.length - 1;
+  const clamp = value => Math.min(1, Math.max(0, value));
+  let frame = 0;
+  let previousProgress = -1;
+
+  function render() {
+    frame = 0;
+    if (!enabled.matches) return;
+    const travel = track.offsetHeight - sticky.offsetHeight;
+    if (travel <= 0) return;
+    const progress = clamp(-track.getBoundingClientRect().top / travel) * last;
+    if (progress === previousProgress) return;
+    previousProgress = progress;
+    const step = Math.min(last - 1, Math.floor(progress));
+    const blend = clamp((progress - step - .25) / .5);
+    const current = step + blend * blend * (3 - 2 * blend);
+    const active = Math.round(current);
+    cards.forEach((card, index) => {
+      const distance = index - current;
+      const depth = Math.min(1.5, Math.abs(distance));
+      card.style.setProperty("--special-shift", `${distance * (wide.matches ? 102 : 66)}%`);
+      card.style.setProperty("--special-depth", String(depth));
+      card.style.setProperty("--special-image-alpha", String(clamp(1 - depth * .82)));
+      card.style.setProperty("--special-copy-alpha", String(clamp(1 - depth * 2.3)));
+      card.style.setProperty("--special-layer", String(10 - Math.round(depth * 4)));
+      dots[index]?.classList.toggle("is-on", index === active);
+    });
+  }
+
+  function schedule() {
+    if (enabled.matches && !frame) frame = requestAnimationFrame(render);
+  }
+
+  function refresh() {
+    section.classList.toggle("is-scrolly", enabled.matches);
+    previousProgress = -1;
+    render();
+  }
+
+  enabled.addEventListener("change", refresh);
+  addEventListener("resize", refresh);
+  addEventListener("scroll", schedule, { passive: true });
+  refresh();
 }
 
 setupWelcome();
