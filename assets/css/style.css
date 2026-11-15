@@ -583,6 +583,8 @@ html.has-window .wood-window { display: block; position: absolute; inset: 0; }
 .menu-section .section-intro:last-child { margin-bottom: 0; }
 .menu-section .section-intro:has(+ .menu-page-link[hidden]) { margin-bottom: 0; }
 .menu-page-link { margin-top: 24px; }
+.menu-notes { margin-top: 24px; font-size: .88rem; color: var(--muted); }
+.product-photo-note { font-size: .78rem; font-style: italic; }
 .footer-brand p:empty, .footer-grid address + p:empty { display: none; }
 .mobile-actions:has(a[hidden]) { grid-template-columns: 1fr; }
 

@@ -103,7 +103,7 @@ def variants(file_name, width, ext):
 def image(key, *, hero=False, sizes="(min-width: 900px) 45vw, 100vw"):
     item = DATA["imagini"][key]
     alt = item["alt"]
-    if DATA["fotografiiIlustrative"]:
+    if DATA["fotografiiIlustrative"] or item.get("ilustrativa"):
         alt = "Imagine ilustrativă. " + alt
     loading = 'fetchpriority="high"' if hero else 'loading="lazy" decoding="async"'
     avif = variants(item["fisier"], item["latime"], ".avif")
@@ -194,6 +194,15 @@ def small_src(key):
     return IMG + (small.name if small.exists() else item["fisier"])
 
 
+def product_detail(product, badge=""):
+    description = esc(product.get("descriere", ""))
+    photo = DATA["imagini"].get(product.get("imagine"), {})
+    if photo.get("ilustrativa"):
+        description += " · " if description else ""
+        description += '<span class="product-photo-note">Foto ilustrativă</span>'
+    return f"<p>{description}{badge}</p>" if description or badge else ""
+
+
 def menu_board():
     products = [product for category in DATA["meniu"] for product in category["produse"]]
     tags = {tag for product in products for tag in product.get("etichete", [])}
@@ -219,7 +228,7 @@ def menu_board():
             items.append(
                 f'<li class="board-item" data-tags="{" ".join(labels)}" style="view-transition-name: produs-{n}">'
                 f'<div class="board-line">{thumb}<h4>{esc(product["nume"])}</h4><span class="board-dots" aria-hidden="true"></span>'
-                f'<span class="board-price">{amount}</span></div><p>{esc(product["descriere"])}{star}</p></li>'
+                f'<span class="board-price">{amount}</span></div>{product_detail(product, star)}</li>'
             )
             n += 1
         groups.append(
@@ -339,6 +348,8 @@ story = TEXT["poveste"]
 gallery = TEXT["galerie"]["imagini"]
 menu_available = any(category["produse"] for category in DATA["meniu"])
 demo_menu = menu_available and DATA.get("meniuExemplu", False)
+demo_site = demo_menu or DATA["extra"].get("demo", False)
+menu_label = "Vezi meniul demo" if demo_menu else "Vezi meniul"
 demo_notice = '<p class="menu-demo-notice"><strong>Meniu demonstrativ</strong> · Produsele și prețurile sunt exemple pentru prezentare.</p>' if demo_menu else ""
 empty_notice = f'<p>{esc(TEXT["meniuInPregatire"])}</p>' if not menu_available else ""
 map_search = maps("search", dorohoi["cautareHarta"])
@@ -367,9 +378,10 @@ if gallery:
 if story:
     nav.append(("poveste", "Poveste"))
 values = {
-    "demoRobots": '<meta name="robots" content="noindex">' if demo_menu else "",
-    "demoHero": '<p class="hero-demo-label">Site demonstrativ</p>' if demo_menu else "",
-    "demoMenuLink": f'<a class="button button-ghost" href="#meniu">Vezi meniul demo {arrow("M12 4v15m-6-6 6 6 6-6")}</a>' if demo_menu else "",
+    "demoRobots": '<meta name="robots" content="noindex">' if demo_site else "",
+    "demoHero": '<p class="hero-demo-label">Site demonstrativ</p>' if demo_site else "",
+    "menuLink": f'<a class="button button-ghost" href="#meniu">{menu_label} {arrow("M12 4v15m-6-6 6 6 6-6")}</a>' if menu_available else "",
+    "menuNotes": f'<p class="menu-notes">{esc(TEXT["meniuNota"])}</p>' if menu_available and TEXT.get("meniuNota") else "",
     "favicon": esc(IMG + "favicon.png"),
     "title": esc(TEXT["titluPagina"]),
     "logo": logo(),
@@ -541,14 +553,14 @@ def qr_item(product):
     fav = '<span class="qm-fav">Preferata casei</span>' if product.get("preferat") else ""
     return (
         f'<li class="qm-item">{thumb}<h3>{esc(product["nume"])}{fav}</h3>'
-        f'<span class="price">{amount}</span><p>{esc(product["descriere"])}</p></li>'
+        f'<span class="price">{amount}</span>{product_detail(product)}</li>'
     )
 
 
 qr_path = ROOT / "assets/img/qr-meniu.svg"
 menu_values = dict(values)
 menu_values.update({
-    "tableCardLink": '<a class="text-link" href="print/card-masa.html">Cartonaș QR pentru masă</a>' if demo_menu and qr_path.exists() else "",
+    "tableCardLink": '<a class="text-link" href="print/card-masa.html">Cartonaș QR pentru masă</a>' if qr_path.exists() else "",
     "tableCardNote": "Meniu demonstrativ" if demo_menu else "Scanează pentru meniul cafenelei",
     "menuDemoNotice": demo_notice,
     "menuEmptyNotice": empty_notice,

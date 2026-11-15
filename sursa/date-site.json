@@ -12,151 +12,233 @@
     "facebook": "",
     "email": "",
     "whatsapp": "",
-    "scrieRecenzie": ""
+    "scrieRecenzie": "https://search.google.com/local/writereview?placeid=ChIJXyJccQBhNEcRDuTDARJZxrQ"
   },
   "video": {
     "youtube": "",
     "credit": ""
   },
-  "meniuExemplu": true,
+  "meniuExemplu": false,
   "meniu": [
     {
       "id": "cafea",
-      "nume": "Cafea",
+      "nume": "Cafea Meron",
       "produse": [
         {
-          "nume": "Espresso",
-          "pret": 9,
-          "descriere": "O doză de espresso.",
-          "etichete": []
+          "nume": "Espresso single",
+          "pret": 10,
+          "descriere": ""
         },
         {
           "nume": "Espresso dublu",
           "pret": 13,
-          "descriere": "Două doze de espresso.",
-          "etichete": []
+          "descriere": ""
         },
         {
           "nume": "Americano",
+          "pret": 10,
+          "descriere": ""
+        },
+        {
+          "nume": "Espresso macchiato",
           "pret": 11,
-          "descriere": "Espresso lungit cu apă fierbinte.",
-          "etichete": []
+          "descriere": ""
         },
         {
           "nume": "Cappuccino",
+          "pret": 13,
+          "descriere": "",
+          "imagine": "ceasca"
+        },
+        {
+          "nume": "Cappuccino grande",
           "pret": 14,
-          "descriere": "Espresso și lapte cu spumă fină.",
-          "etichete": []
+          "descriere": ""
         },
         {
           "nume": "Flat white",
-          "pret": 16,
-          "descriere": "Espresso dublu și lapte.",
-          "etichete": []
+          "pret": 15,
+          "descriere": ""
         },
         {
-          "nume": "Caffè latte",
-          "pret": 16,
-          "descriere": "Espresso cu lapte și puțină spumă.",
-          "etichete": []
+          "nume": "Latte",
+          "pret": 17,
+          "descriere": ""
         }
       ]
     },
     {
-      "id": "reci",
-      "nume": "Băuturi reci",
+      "id": "fresh",
+      "nume": "Fresh și limonadă",
       "produse": [
         {
-          "nume": "Iced latte",
+          "nume": "Fresh de portocale",
           "pret": 17,
-          "descriere": "Espresso, lapte și gheață.",
+          "descriere": "",
           "etichete": [
             "rece"
-          ]
+          ],
+          "imagine": "portocale"
         },
         {
-          "nume": "Espresso tonic",
-          "pret": 18,
-          "descriere": "Espresso cu apă tonică și gheață.",
+          "nume": "Limonadă",
+          "pret": 14,
+          "descriere": "",
           "etichete": [
             "rece"
-          ]
+          ],
+          "imagine": "limonada"
         },
         {
-          "nume": "Limonadă cu mentă",
-          "pret": 16,
-          "descriere": "Lămâie, mentă și gheață.",
+          "nume": "Limonadă cu fructe",
+          "pret": 17,
+          "descriere": "",
           "etichete": [
-            "rece",
-            "fara-cafeina"
-          ]
-        },
-        {
-          "nume": "Limonadă cu zmeură",
-          "pret": 18,
-          "descriere": "Lămâie și piure de zmeură.",
-          "etichete": [
-            "rece",
-            "fara-cafeina"
+            "rece"
           ]
         }
       ]
     },
     {
-      "id": "ceai",
+      "id": "calde",
       "nume": "Ceai și ciocolată",
       "produse": [
         {
-          "nume": "Ceai de mentă",
-          "pret": 12,
-          "descriere": "Infuzie de mentă.",
-          "etichete": [
-            "fara-cafeina"
-          ]
-        },
-        {
-          "nume": "Ceai de fructe",
-          "pret": 12,
-          "descriere": "Infuzie de fructe de pădure.",
-          "etichete": [
-            "fara-cafeina"
-          ]
-        },
-        {
           "nume": "Ciocolată caldă",
-          "pret": 16,
-          "descriere": "Cacao și lapte.",
+          "pret": 14,
+          "descriere": "Albă sau neagră",
           "etichete": [
             "dulce"
+          ]
+        },
+        {
+          "nume": "Matcha ceai",
+          "pret": 18,
+          "descriere": "",
+          "imagine": "matcha"
+        },
+        {
+          "nume": "Ceai",
+          "pret": 14,
+          "descriere": ""
+        },
+        {
+          "nume": "Chai latte",
+          "pret": 14,
+          "descriere": ""
+        }
+      ]
+    },
+    {
+      "id": "racoritoare",
+      "nume": "Băuturi răcoritoare",
+      "produse": [
+        {
+          "nume": "Apă Dorna",
+          "pret": 10,
+          "descriere": "",
+          "etichete": [
+            "rece"
+          ]
+        },
+        {
+          "nume": "Coca-Cola / Fanta / Sprite",
+          "pret": 10,
+          "descriere": "",
+          "etichete": [
+            "rece"
+          ]
+        },
+        {
+          "nume": "Fuze Tea / Cappy",
+          "pret": 10,
+          "descriere": "",
+          "etichete": [
+            "rece"
           ]
         }
       ]
     },
     {
-      "id": "patiserie",
-      "nume": "Patiserie",
+      "id": "sandvisuri",
+      "nume": "Sandvișuri și wraps",
       "produse": [
         {
-          "nume": "Croissant cu unt",
-          "pret": 10,
-          "descriere": "Croissant simplu cu unt.",
+          "nume": "Club Sandwich",
+          "pret": 18,
+          "descriere": "",
+          "imagine": "club"
+        },
+        {
+          "nume": "Rustic Focaccia",
+          "pret": 20,
+          "descriere": ""
+        },
+        {
+          "nume": "Wrap vegetarian",
+          "pret": 16,
+          "descriere": "De post"
+        },
+        {
+          "nume": "Sandwich XL",
+          "pret": 20,
+          "descriere": ""
+        }
+      ]
+    },
+    {
+      "id": "croissante",
+      "nume": "Croissante",
+      "produse": [
+        {
+          "nume": "Croissant sandwich",
+          "pret": 18,
+          "descriere": ""
+        },
+        {
+          "nume": "Croissant umplut",
+          "pret": 16,
+          "descriere": "Bueno, Pistachio sau White Snow",
           "etichete": [
-            "fara-cafeina"
+            "dulce"
+          ],
+          "imagine": "cafeaCroissant"
+        }
+      ]
+    },
+    {
+      "id": "deserturi",
+      "nume": "Deserturi",
+      "produse": [
+        {
+          "nume": "Red Velvet Cake",
+          "pret": 18,
+          "descriere": "",
+          "etichete": [
+            "dulce"
+          ],
+          "imagine": "red-velvet"
+        },
+        {
+          "nume": "Lotus Caramel Cake",
+          "pret": 18,
+          "descriere": "",
+          "etichete": [
+            "dulce"
           ]
         },
         {
-          "nume": "Croissant cu vanilie",
-          "pret": 15,
-          "descriere": "Croissant umplut cu cremă de vanilie.",
+          "nume": "Cheesecake Oreo",
+          "pret": 19,
+          "descriere": "",
           "etichete": [
-            "dulce",
-            "fara-cafeina"
+            "dulce"
           ]
         },
         {
-          "nume": "Brownie",
-          "pret": 14,
-          "descriere": "Prăjitură densă cu ciocolată.",
+          "nume": "Tiramisu artizanal",
+          "pret": 19,
+          "descriere": "",
           "etichete": [
             "dulce"
           ]
@@ -172,13 +254,25 @@
     {
       "autor": "Patricia Miron",
       "stele": 5,
-      "text": "Really, really cozy place.",
+      "text": "Really, really cozy place. […] The coffee is excellent👌",
+      "url": "https://www.google.com/maps/place/AIYR+Coffee/data=!4m7!3m6!1s0x47346100715c225f:0xb4c6591201c3e40e!8m2!3d47.9545741!4d26.3971855!16s%2Fg%2F11y_xgzvdb!19sChIJXyJccQBhNEcRDuTDARJZxrQ"
+    },
+    {
+      "autor": "Selina Finke",
+      "stele": 5,
+      "text": "Amazing service and great food!",
       "url": "https://www.google.com/maps/place/AIYR+Coffee/data=!4m7!3m6!1s0x47346100715c225f:0xb4c6591201c3e40e!8m2!3d47.9545741!4d26.3971855!16s%2Fg%2F11y_xgzvdb!19sChIJXyJccQBhNEcRDuTDARJZxrQ"
     },
     {
       "autor": "Andrei Spetco",
       "stele": 5,
       "text": "Great coffee and kind staff!",
+      "url": "https://www.google.com/maps/place/AIYR+Coffee/data=!4m7!3m6!1s0x47346100715c225f:0xb4c6591201c3e40e!8m2!3d47.9545741!4d26.3971855!16s%2Fg%2F11y_xgzvdb!19sChIJXyJccQBhNEcRDuTDARJZxrQ"
+    },
+    {
+      "autor": "florin liteanu",
+      "stele": 5,
+      "text": "One of the best in town",
       "url": "https://www.google.com/maps/place/AIYR+Coffee/data=!4m7!3m6!1s0x47346100715c225f:0xb4c6591201c3e40e!8m2!3d47.9545741!4d26.3971855!16s%2Fg%2F11y_xgzvdb!19sChIJXyJccQBhNEcRDuTDARJZxrQ"
     },
     {
@@ -201,6 +295,26 @@
     {
       "nume": "Patricia Miron / Google Maps",
       "url": "https://www.google.com/maps/place/AIYR+Coffee/data=!4m7!3m6!1s0x47346100715c225f:0xb4c6591201c3e40e!8m2!3d47.9545741!4d26.3971855!16s%2Fg%2F11y_xgzvdb!19sChIJXyJccQBhNEcRDuTDARJZxrQ"
+    },
+    {
+      "nume": "Liana S / Unsplash",
+      "url": "https://unsplash.com/photos/U4kneR_s7bU"
+    },
+    {
+      "nume": "Anton Porsche / Wikimedia Commons (CC0)",
+      "url": "https://commons.wikimedia.org/wiki/File:Club-sandwich2.jpg"
+    },
+    {
+      "nume": "Mateusz Feliksik / Pexels",
+      "url": "https://www.pexels.com/photo/7974817/"
+    },
+    {
+      "nume": "İbrahim Hakkı Uçman / Pexels",
+      "url": "https://www.pexels.com/photo/4134388/"
+    },
+    {
+      "nume": "Regina Ferraz / Pexels",
+      "url": "https://www.pexels.com/photo/6133310/"
     }
   ],
   "imagini": {
@@ -239,23 +353,65 @@
       "inaltime": 1080,
       "alt": "Firma luminoasă și intrarea în AIYR Coffee.",
       "titlu": "Fațada cafenelei"
+    },
+    "matcha": {
+      "fisier": "meniu-matcha.webp",
+      "latime": 850,
+      "inaltime": 567,
+      "alt": "Matcha verde într-o ceașcă.",
+      "ilustrativa": true
+    },
+    "club": {
+      "fisier": "meniu-club.webp",
+      "latime": 850,
+      "inaltime": 576,
+      "alt": "Club sandwich tăiat în două.",
+      "ilustrativa": true
+    },
+    "portocale": {
+      "fisier": "meniu-portocale.webp",
+      "latime": 850,
+      "inaltime": 638,
+      "alt": "Un pahar de suc de portocale.",
+      "ilustrativa": true
+    },
+    "limonada": {
+      "fisier": "meniu-limonada.webp",
+      "latime": 607,
+      "inaltime": 850,
+      "alt": "Limonadă cu gheață într-un pahar.",
+      "ilustrativa": true
+    },
+    "red-velvet": {
+      "fisier": "meniu-red-velvet.webp",
+      "latime": 570,
+      "inaltime": 850,
+      "alt": "Felie de Red Velvet cu straturi de cremă.",
+      "ilustrativa": true
+    },
+    "ceasca": {
+      "fisier": "meniu-ceasca.webp",
+      "latime": 850,
+      "inaltime": 825,
+      "alt": "Cafea cu desen în spumă, fotografiată la AIYR Coffee.",
+      "ilustrativa": false
     }
   },
   "extra": {
     "activ": true,
     "demo": true,
     "specialitati": {
-      "titlu": "Specialități propuse",
-      "text": "Trei exemple din meniul demonstrativ.",
+      "titlu": "Din meniu",
+      "text": "Cappuccino, limonadă și croissant umplut.",
       "produse": [
         "Cappuccino",
-        "Limonadă cu mentă",
-        "Croissant cu unt"
+        "Limonadă",
+        "Croissant umplut"
       ],
       "tente": {
         "Cappuccino": "#c08a5e",
-        "Limonadă cu mentă": "#6fa86a",
-        "Croissant cu unt": "#e0ac4f"
+        "Limonadă": "#6fa86a",
+        "Croissant umplut": "#e0ac4f"
       },
       "ingrediente": {
         "Cappuccino": [
@@ -266,7 +422,7 @@
           "bob",
           "bob"
         ],
-        "Limonadă cu mentă": [
+        "Limonadă": [
           "frunza",
           "lime",
           "frunza",
@@ -274,7 +430,7 @@
           "lime",
           "frunza"
         ],
-        "Croissant cu unt": [
+        "Croissant umplut": [
           "firimitura",
           "firimitura",
           "bob",
@@ -366,18 +522,19 @@
     },
     "meniu": "Meniu",
     "meniuInPregatire": "Meniul online este în pregătire.",
-    "recenzii": "Recenzii",
+    "recenzii": "Ce spun oaspeții.",
     "locatii": "Unde ne găsești",
     "subsol": "",
     "paginaMeniu": {
       "titlu": "Meniu — AIYR Coffee Dorohoi",
-      "descriere": "Meniul AIYR Coffee din Dorohoi.",
+      "descriere": "Meniul AIYR Coffee din Dorohoi, cu băuturi, sandvișuri, croissante și deserturi.",
       "linkPoveste": "Înapoi la site",
       "imagine": "hero"
     },
     "heroCuvinteAurii": [
       "aiyr"
-    ]
+    ],
+    "meniuNota": "Pentru informații despre ingrediente și alergeni, întreabă personalul."
   },
   "folderImagini": "assets/img/aiyr/"
 }

@@ -27,6 +27,8 @@ html { scroll-padding-top: 76px; }
 .qm-item h3 { align-self: end; font-size: 1.35rem; line-height: 1.1; }
 .qm-item .price { align-self: end; color: var(--oak); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .qm-item p { grid-column: 2 / -1; align-self: start; color: var(--muted); font-size: .86rem; line-height: 1.45; }
+.qm-item:not(:has(p)) .qm-thumb { grid-row: auto; }
+.qm-item:not(:has(p)) :is(h3, .price) { align-self: center; }
 .qm-fav { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; color: var(--espresso); background: var(--oak); font: 700 .58rem/1.6 var(--sans); letter-spacing: .1em; text-transform: uppercase; vertical-align: middle; }
 
 .qm-foot { display: grid; justify-items: start; gap: 14px; max-width: 640px; margin: 24px auto 0; padding: 36px var(--gut) 56px; border-top: 1px solid var(--line); }
