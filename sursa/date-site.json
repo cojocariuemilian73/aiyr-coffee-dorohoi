@@ -1,0 +1,90 @@
+{
+  "_instructiuni": "Editează datele verificate pentru AIYR Coffee, apoi rulează python sursa/genereaza.py.",
+  "brand": "AIYR Coffee",
+  "description": "AIYR Coffee, cafenea în Dorohoi, pe Strada Războieni 1. Vezi locația și traseul către cafenea.",
+  "publicUrl": "",
+  "atelier": "",
+  "deschidere": "",
+  "linkuri": {
+    "recenzii": "",
+    "harta": "",
+    "instagram": "",
+    "facebook": "",
+    "email": "",
+    "whatsapp": "",
+    "scrieRecenzie": ""
+  },
+  "video": {
+    "youtube": "",
+    "credit": ""
+  },
+  "meniuExemplu": false,
+  "meniu": [],
+  "evaluareGoogle": null,
+  "recenzii": [],
+  "fotografiiIlustrative": true,
+  "surseFoto": [
+    {
+      "nume": "Nathan Dumlao / Unsplash",
+      "url": "https://unsplash.com/photos/zUNs99PGDg0"
+    }
+  ],
+  "imagini": {
+    "hero": {
+      "fisier": "coperta.webp",
+      "latime": 1440,
+      "inaltime": 1800,
+      "alt": "Cești de cafea cu lapte, pe o masă de lemn.",
+      "mobil": "coperta-mobil.webp",
+      "latimeMobil": 800,
+      "inaltimeMobil": 1080
+    },
+    "share": {
+      "fisier": "distribuire.webp",
+      "latime": 1200,
+      "inaltime": 630,
+      "alt": "Cești de cafea cu lapte."
+    }
+  },
+  "extra": {
+    "activ": false
+  },
+  "locatii": [
+    {
+      "oras": "Dorohoi",
+      "judet": "Botoșani",
+      "adresa": "Strada Războieni 1",
+      "reper": "",
+      "cautareHarta": "AIYR Coffee, Strada Războieni 1, Dorohoi",
+      "telefon": "",
+      "program": []
+    }
+  ],
+  "texte": {
+    "titluPagina": "AIYR Coffee — Cafenea în Dorohoi",
+    "logo": {
+      "mare": "AIYR",
+      "mic": "coffee"
+    },
+    "hero": "AIYR Coffee",
+    "heroSubtitlu": "Cafenea în Dorohoi · Strada Războieni 1",
+    "poveste": {},
+    "galerie": {
+      "imagini": [],
+      "titlu": "",
+      "text": ""
+    },
+    "meniu": "Meniu",
+    "meniuInPregatire": "Meniul online este în pregătire.",
+    "recenzii": "Recenzii",
+    "locatii": "Unde ne găsești",
+    "subsol": "",
+    "paginaMeniu": {
+      "titlu": "Meniu — AIYR Coffee Dorohoi",
+      "descriere": "Meniul AIYR Coffee din Dorohoi.",
+      "linkPoveste": "Înapoi la site",
+      "imagine": "hero"
+    }
+  },
+  "folderImagini": "assets/img/aiyr/"
+}
