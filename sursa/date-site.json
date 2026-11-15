@@ -183,16 +183,16 @@
   ],
   "imagini": {
     "hero": {
-      "fisier": "coperta.webp",
+      "fisier": "coperta-aiyr.webp",
       "latime": 1600,
       "inaltime": 1033,
       "alt": "Fațada AIYR Coffee din Dorohoi, cu terasa și firma luminoasă.",
-      "mobil": "coperta-mobil.webp",
+      "mobil": "coperta-mobil-aiyr.webp",
       "latimeMobil": 800,
       "inaltimeMobil": 1080
     },
     "share": {
-      "fisier": "distribuire.webp",
+      "fisier": "distribuire-aiyr.webp",
       "latime": 1200,
       "inaltime": 630,
       "alt": "Intrarea și terasa cafenelei AIYR Coffee."
